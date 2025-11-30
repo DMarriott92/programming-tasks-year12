@@ -1,11 +1,10 @@
 """
-TASK: 03 Array Reversal
+TASK: 03 Queue Simulation
 
-# Array Reversal
-Create a program that:
-- Generates a list of random integers.
-- Reverses the list manually (no slicing or .reverse).
-- Includes a function `reverse_list(values)` that returns a new reversed list.
+# Queue Simulation using OOP
+Make a Queue class with:
+- enqueue, dequeue, peek, size  
+Simulate customers joining/leaving.
 
 TODO:
 - Fill in functions

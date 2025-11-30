@@ -1,11 +1,13 @@
 """
-TASK: 03 Array Reversal
+TASK: 01 Mergesort
 
-# Array Reversal
-Create a program that:
-- Generates a list of random integers.
-- Reverses the list manually (no slicing or .reverse).
-- Includes a function `reverse_list(values)` that returns a new reversed list.
+# Mergesort Implementation
+You have a randomly generated list of integers.
+
+Task:
+- Implement recursive mergesort
+- Store in a reusable function mergesort(values)
+- The function must work on lists of any size
 
 TODO:
 - Fill in functions

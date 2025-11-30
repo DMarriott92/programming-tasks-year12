@@ -1,11 +1,12 @@
 """
-TASK: 03 Array Reversal
+TASK: 01 2D Array Adder
 
-# Array Reversal
-Create a program that:
-- Generates a list of random integers.
-- Reverses the list manually (no slicing or .reverse).
-- Includes a function `reverse_list(values)` that returns a new reversed list.
+# BankAccount Class
+Create a `BankAccount` class with:
+- owner, balance
+- deposit(), withdraw(), get_balance()
+- prevent negative balances
+- demo interaction program
 
 TODO:
 - Fill in functions

@@ -1,11 +1,11 @@
 """
-TASK: 03 Array Reversal
+TASK: 02 Maze Solver
 
-# Array Reversal
-Create a program that:
-- Generates a list of random integers.
-- Reverses the list manually (no slicing or .reverse).
-- Includes a function `reverse_list(values)` that returns a new reversed list.
+# Recursive Maze Solver
+Create a 2D maze with:
+- S (start), E (end), . (path), # (wall)
+
+Use recursive DFS to find a valid path.
 
 TODO:
 - Fill in functions

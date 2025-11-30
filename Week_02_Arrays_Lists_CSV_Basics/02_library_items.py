@@ -1,11 +1,11 @@
 """
-TASK: 03 Array Reversal
+TASK: 02 Library Items
 
-# Array Reversal
-Create a program that:
-- Generates a list of random integers.
-- Reverses the list manually (no slicing or .reverse).
-- Includes a function `reverse_list(values)` that returns a new reversed list.
+# Library Items OOP
+Create a base class `Item`, and subclasses:
+- `Book`
+- `DVD`
+Demonstrate polymorphism by storing mixed items in a shared list.
 
 TODO:
 - Fill in functions

@@ -1,11 +1,11 @@
 """
-TASK: 03 Array Reversal
+TASK: 03 N Queens Solver
 
-# Array Reversal
-Create a program that:
-- Generates a list of random integers.
-- Reverses the list manually (no slicing or .reverse).
-- Includes a function `reverse_list(values)` that returns a new reversed list.
+# N-Queens Solver
+Use recursive backtracking to:
+- Solve N-Queens
+- Print board solution(s)
+- Count total valid solutions
 
 TODO:
 - Fill in functions
