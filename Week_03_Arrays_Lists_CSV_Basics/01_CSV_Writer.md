@@ -1,5 +1,5 @@
 # Skills: CSV writing
-CAsk the user for:
+Ask the user for:
 - Name
 - age
 - favourite colour
