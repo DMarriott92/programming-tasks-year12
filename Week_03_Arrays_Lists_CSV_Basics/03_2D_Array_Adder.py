@@ -1,12 +1,11 @@
 """
 TASK: 03 2D Array Adder
 
-# BankAccount Class
-Create a `BankAccount` class with:
-- owner, balance
-- deposit(), withdraw(), get_balance()
-- prevent negative balances
-- demo interaction program
+# 2D Array Added
+Create a 2D arraw and allow user to:
+- Append new values in
+- read all current values
+- delete a chosen entry
 
 TODO:
 - Fill in functions
