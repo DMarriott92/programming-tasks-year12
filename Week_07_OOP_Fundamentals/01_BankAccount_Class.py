@@ -1,0 +1,28 @@
+"""
+TASK: 01 Bankaccount Class
+
+# Skills - https://www.w3schools.com/python/python_oop.asp Highly recommend you visit this site.
+Create class with the following attributes:
+- Owner
+- Balance
+- Log
+With the following methods:
+- deposit()
+- withdraw() with validation or an overdraft validation
+- get_balance()
+- get_log() of all transactions
+
+TODO:
+- Fill in functions
+- Add demonstration code under `if __name__ == "__main__":`
+"""
+
+def main():
+    # TODO: Write demonstration/testing code
+    # If you want to delete all the code here and work just with a blank file go ahead, remember anything under the if __name__=="__main__":
+    # will only run if this module is being run directly. So used this subprocedure to carry out testing if it is going to be an imported file.
+    pass
+
+
+if __name__ == "__main__":
+    main()
