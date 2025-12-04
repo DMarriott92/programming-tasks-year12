@@ -1,11 +1,12 @@
 """
-TASK: 02 Binary Search Tester
-
-# Binary Search Tester
-Generate a sorted list. Implement:
-- iterative binary search
-- recursive binary search
-Then benchmark them with random inputs.
+TASK: 03 Vehicle Rental System
+# Vehicle Rental System
+Classes: Car, Van, Bike
+Features:
+-rent
+-return
+-calculate daily cost
+Store records in a list or JSON file.
 
 TODO:
 - Fill in functions

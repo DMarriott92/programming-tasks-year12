@@ -1,11 +1,8 @@
 """
-TASK: 03 Grid Path Counter
+TASK: 01 Timetable Scheduler
 
-# Grid Path Counter
-Given an N×M grid:
-- Count paths using recursion
-- Count paths using iteration
-Movement allowed: RIGHT or DOWN only.
+# Timetable Scheduler
+User enters lessons; program arranges them into a weekly timetable grid.
 
 TODO:
 - Fill in functions

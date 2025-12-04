@@ -1,10 +1,15 @@
 """
-TASK: 01 Bubble Sort
+TASK: 02 RPG Battle System
 
-# Bubble Sort
-Implement Bubble Sort:
-- Do not use built-in sort()
-- Count swaps
+# RPG Battle System
+Classes:
+-Character (base)
+-Warrior
+-Mage
+-Archer
+
+Attributes: HP, attack power, defence, special abilities.
+Simulate a turn-based battle until one character wins.
 
 TODO:
 - Fill in functions

@@ -1,11 +1,18 @@
 """
-TASK: 02 Binary Search Tester
+TASK: 01 Shape Hierarchy
 
-# Binary Search Tester
-Generate a sorted list. Implement:
-- iterative binary search
-- recursive binary search
-Then benchmark them with random inputs.
+#  Shape Hierarchy
+Base: Shape
+Subclasses:
+-Circle
+-Rectangle
+-Triangle
+
+Implement:
+-area()
+-perimeter()
+Polymorphic list printing.
+
 
 TODO:
 - Fill in functions

@@ -1,10 +1,17 @@
 """
-TASK: 01 Bubble Sort
+TASK: 02 Binary Search Tester
 
-# Bubble Sort
-Implement Bubble Sort:
-- Do not use built-in sort()
-- Count swaps
+# Statistics Toolkit
+
+Implement functions:
+
+-mean
+-median
+-mode
+-range
+-variance
+-standard deviation
+No libraries except math.
 
 TODO:
 - Fill in functions
