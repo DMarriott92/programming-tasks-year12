@@ -1,0 +1,20 @@
+{
+  "objects": [
+    {
+      "class": "Person",
+      "args": ["Alice"],
+      "attributes": {
+        "age": 30,
+        "occupation": "Engineer"
+      }
+    },
+    {
+      "class": "Car",
+      "args": ["Toyota", "Corolla"],
+      "attributes": {
+        "year": 2021,
+        "electric": false
+      }
+    }
+  ]
+}

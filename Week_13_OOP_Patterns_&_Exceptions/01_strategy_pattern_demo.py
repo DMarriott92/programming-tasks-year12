@@ -1,11 +1,12 @@
 """
-TASK: 03 Grid Path Counter
+TASK: 01 Strategy Pattern
 
-# Grid Path Counter
-Given an N×M grid:
-- Count paths using recursion
-- Count paths using iteration
-Movement allowed: RIGHT or DOWN only.
+# Strategy Pattern Demo
+Create a Sorter object which can use:
+- Bubble sort strategy
+- Insertion sort strategy
+- Mergesort strategy
+Can switch strategies at runtime, choosing which they want to run when creating the object.
 
 TODO:
 - Fill in functions

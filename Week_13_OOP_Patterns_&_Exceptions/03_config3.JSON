@@ -1,0 +1,14 @@
+{
+  "GameObject": {
+    "id": 1,
+    "transform": {
+      "x": 10,
+      "y": 5,
+      "rotation": 90
+    },
+    "properties": {
+      "solid": true,
+      "visible": true
+    }
+  }
+}

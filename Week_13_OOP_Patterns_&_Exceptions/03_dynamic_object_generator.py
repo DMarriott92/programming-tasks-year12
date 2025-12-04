@@ -1,11 +1,9 @@
 """
-TASK: 02 Binary Search Tester
+TASK: 03 Dynamic Object
 
-# Binary Search Tester
-Generate a sorted list. Implement:
-- iterative binary search
-- recursive binary search
-Then benchmark them with random inputs.
+# Dynamic Object Generation
+Given a config file (JSON), dynamically create Python objects with attributes loaded at runtime.
+
 
 TODO:
 - Fill in functions

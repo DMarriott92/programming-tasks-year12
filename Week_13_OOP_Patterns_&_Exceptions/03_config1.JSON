@@ -1,0 +1,21 @@
+{
+  "entities": [
+    {
+      "type": "Enemy",
+      "name": "Goblin",
+      "health": 30,
+      "damage": 5
+    },
+    {
+      "type": "Enemy",
+      "name": "Orc",
+      "health": 80,
+      "damage": 12
+    },
+    {
+      "type": "NPC",
+      "name": "Shopkeeper",
+      "items": ["potion", "elixir"]
+    }
+  ]
+}

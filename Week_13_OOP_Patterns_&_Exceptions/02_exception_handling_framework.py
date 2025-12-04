@@ -1,10 +1,13 @@
 """
-TASK: 01 Bubble Sort
+TASK: 02 Exception Handling
 
-# Bubble Sort
-Implement Bubble Sort:
-- Do not use built-in sort()
-- Count swaps
+# Exception Handling Framework
+Wrap risky operations such as:
+-division
+-file access
+-input conversion
+Demonstrate custom exceptions.
+
 
 TODO:
 - Fill in functions
