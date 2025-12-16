@@ -1,10 +1,14 @@
 """
-TASK: 01 Bubble Sort
+TASK: 01 Linked List Implementation
 
-# Bubble Sort
-Implement Bubble Sort:
-- Do not use built-in sort()
-- Count swaps
+# Linked List Implementation
+Implement the following methods:
+-append
+-prepend
+-delete
+-search
+-print
+
 
 TODO:
 - Fill in functions

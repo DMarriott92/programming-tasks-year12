@@ -1,11 +1,13 @@
 """
-TASK: 02 Binary Search Tester
+TASK: 03 Hash Table (Chaining or Probing)
+Manually implement a hash table with:
+-hash function
+-collision handling
+-insert
+-search
+-delete
+You can use your own logic, the database must have over 200 spaces.
 
-# Binary Search Tester
-Generate a sorted list. Implement:
-- iterative binary search
-- recursive binary search
-Then benchmark them with random inputs.
 
 TODO:
 - Fill in functions
