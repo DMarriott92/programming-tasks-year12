@@ -1,10 +1,6 @@
 """
-TASK: 01 Bubble Sort
-
-# Bubble Sort
-Implement Bubble Sort:
-- Do not use built-in sort()
-- Count swaps
+TASK: 03 DFS & Cycle Detection
+Implement recursive DFS and detect cycles in a directed graph.
 
 TODO:
 - Fill in functions

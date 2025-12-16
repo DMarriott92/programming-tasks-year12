@@ -1,11 +1,10 @@
 """
-TASK: 03 Grid Path Counter
-
-# Grid Path Counter
-Given an N×M grid:
-- Count paths using recursion
-- Count paths using iteration
-Movement allowed: RIGHT or DOWN only.
+TASK: 02 Graph BFS Traversal
+Use adjacency list to store graph.
+Implement BFS:
+-queue-based
+-output traversal order
+You can use a JSON file if you want to have the list stored there. (Extesntion, use weights)
 
 TODO:
 - Fill in functions

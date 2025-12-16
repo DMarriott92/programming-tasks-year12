@@ -1,11 +1,10 @@
 """
-TASK: 02 Binary Search Tester
-
-# Binary Search Tester
-Generate a sorted list. Implement:
-- iterative binary search
-- recursive binary search
-Then benchmark them with random inputs.
+TASK: 01 Binary Tree Traversal
+Create a binary tree class and implement:
+-inorder
+-preorder
+-postorder
+No inbuilt libraries used.
 
 TODO:
 - Fill in functions
