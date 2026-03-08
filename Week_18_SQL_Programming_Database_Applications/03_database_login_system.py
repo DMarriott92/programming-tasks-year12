@@ -1,10 +1,12 @@
 """
-TASK: 01 Bubble Sort
+TASK: 03 Database Login System
 
-# Bubble Sort
-Implement Bubble Sort:
-- Do not use built-in sort()
-- Count swaps
+# Database Login System
+Store user credentials securely (hashed)
+Implement:
+- registration
+- login
+- password verification
 
 TODO:
 - Fill in functions

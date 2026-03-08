@@ -1,12 +1,8 @@
 """
-TASK: 03 Grid Path Counter
+TASK: 01 Parameterised Queries
 
-# Grid Path Counter
-Given an N×M grid:
-- Count paths using recursion
-- Count paths using iteration
-Movement allowed: RIGHT or DOWN only.
-
+# Parameterised Queries
+Perform secure INSERT/INSERT/DELETE operations using parameterised SQL queries
 TODO:
 - Fill in functions
 - Add demonstration code under `if __name__ == "__main__":`

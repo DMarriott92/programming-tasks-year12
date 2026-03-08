@@ -1,11 +1,13 @@
 """
-TASK: 02 Binary Search Tester
+TASK: 02 Aggregate SQL Reports
 
-# Binary Search Tester
-Generate a sorted list. Implement:
-- iterative binary search
-- recursive binary search
-Then benchmark them with random inputs.
+# Aggregate SQL Reports
+Write SQL queries that show:
+- COUNT
+- AVG
+- MAX
+- MIN
+- GROUP BY summaries
 
 TODO:
 - Fill in functions
