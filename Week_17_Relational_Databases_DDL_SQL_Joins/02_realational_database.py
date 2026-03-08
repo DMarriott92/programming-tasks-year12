@@ -1,11 +1,13 @@
 """
-TASK: 03 Grid Path Counter
+TASK: 02 Relational Database Design
 
-# Grid Path Counter
-Given an N×M grid:
-- Count paths using recursion
-- Count paths using iteration
-Movement allowed: RIGHT or DOWN only.
+# Relational Database Design
+Design a 3-4 table relational database  for a system of your choice.
+Produce:
+- Entity Relationship Diagram
+- Table definitions
+- Foreign Keys
+
 
 TODO:
 - Fill in functions

@@ -1,11 +1,15 @@
 """
-TASK: 02 Binary Search Tester
+TASK: 01 Database Design
 
-# Binary Search Tester
-Generate a sorted list. Implement:
-- iterative binary search
-- recursive binary search
-Then benchmark them with random inputs.
+# Database Design
+Design a 1 table database  for a system of your choice.
+Implement:
+- Open database
+- Write to
+- Read from
+- Edit
+- Display based on SQL query
+
 
 TODO:
 - Fill in functions

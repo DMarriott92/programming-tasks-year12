@@ -1,10 +1,11 @@
 """
-TASK: 01 Bubble Sort
+TASK: 03 Cross-Table JOIN Queries
 
-# Bubble Sort
-Implement Bubble Sort:
-- Do not use built-in sort()
-- Count swaps
+# Cross-Table JOIN Queries
+Using SQLite:
+- perform INNER JOIN, LEFT JOIN
+- Write parameterised SELECT queries
+- Output results as formatted tables
 
 TODO:
 - Fill in functions
