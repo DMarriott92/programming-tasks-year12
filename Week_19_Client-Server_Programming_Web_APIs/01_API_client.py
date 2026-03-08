@@ -1,10 +1,11 @@
 """
-TASK: 01 Bubble Sort
+TASK: 01 Basic API Client
 
-# Bubble Sort
-Implement Bubble Sort:
-- Do not use built-in sort()
-- Count swaps
+# API Client
+Using requests:
+- call a public API (tfl or open-meteo are good places to start)
+- parse JSON response
+- display formatted results (doesn't need to be flash, maybe start with displaying a single bus stop timings)
 
 TODO:
 - Fill in functions

@@ -1,11 +1,13 @@
 """
-TASK: 03 Grid Path Counter
+TASK: 02 Flask Server (Basic)
 
-# Grid Path Counter
-Given an N×M grid:
-- Count paths using recursion
-- Count paths using iteration
-Movement allowed: RIGHT or DOWN only.
+# Flask Server (Basic)
+- https://cs50.harvard.edu/web/2018/ go to the Flask section of this to understand
+
+Create a Flask server with:
+- at least 2 endpoints
+- JSON responses
+- query parameter handling
 
 TODO:
 - Fill in functions

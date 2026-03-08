@@ -6,3 +6,4 @@ Implement:
 - Read from
 - Edit
 - Display based on SQL query
+- I would highly recommend using this for this chapter https://cs50.harvard.edu/web/2018/
