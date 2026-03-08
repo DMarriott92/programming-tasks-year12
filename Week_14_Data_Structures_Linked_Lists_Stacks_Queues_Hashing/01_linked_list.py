@@ -1,5 +1,6 @@
 """
 TASK: 01 Linked List Implementation
+<<<<<<< HEAD
 
 # Linked List Implementation
 Implement the following for a linked list:
@@ -8,6 +9,17 @@ Implement the following for a linked list:
 - delete
 - search
 - print
+=======
+
+# Linked List Implementation
+Implement the following methods:
+-append
+-prepend
+-delete
+-search
+-print
+
+>>>>>>> 7973bcd3480a3ea031c7272967640cc9880dfce6
 
 TODO:
 - Fill in functions

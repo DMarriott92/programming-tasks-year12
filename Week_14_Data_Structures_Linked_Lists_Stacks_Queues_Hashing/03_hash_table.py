@@ -1,4 +1,6 @@
 """
+<<<<<<< HEAD
+<<<<<<<< HEAD:Week_14_Data_Structures_Linked_Lists_Stacks_Queues_Hashing/03_hash_table.py
 TASK: 03 Hash Table Implementation
 
 #  Hash Table (Chaining or probing)
@@ -9,6 +11,21 @@ Implement:
 - search
 - delete
 
+========
+TASK: 03 DFS & Cycle Detection
+Implement recursive DFS and detect cycles in a directed graph.
+>>>>>>>> 7973bcd3480a3ea031c7272967640cc9880dfce6:Week_15_Trees_&_Graph_Traversal/03_dfs_cycle_detection.py
+=======
+TASK: 03 Hash Table (Chaining or Probing)
+Manually implement a hash table with:
+-hash function
+-collision handling
+-insert
+-search
+-delete
+You can use your own logic, the database must have over 200 spaces.
+
+>>>>>>> 7973bcd3480a3ea031c7272967640cc9880dfce6
 
 TODO:
 - Fill in functions
