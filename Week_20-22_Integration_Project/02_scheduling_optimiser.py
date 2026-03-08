@@ -1,11 +1,13 @@
 """
-TASK: 02 Binary Search Tester
+TASK: 02 Scheduling Optimiser
 
-# Binary Search Tester
-Generate a sorted list. Implement:
-- iterative binary search
-- recursive binary search
-Then benchmark them with random inputs.
+# Sceduling Optimiser
+Using a list of jobs with durations, build:
+- greedy scheduler
+- comparison of scheduling methods
+
+(You can just have a simple list style of jobs)
+[["Job1", 5],["Job2", 6]]
 
 TODO:
 - Fill in functions
