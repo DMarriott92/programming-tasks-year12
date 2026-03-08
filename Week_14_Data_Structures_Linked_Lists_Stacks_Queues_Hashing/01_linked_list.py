@@ -1,11 +1,13 @@
 """
-TASK: 02 Binary Search Tester
+TASK: 01 Linked List Implementation
 
-# Binary Search Tester
-Generate a sorted list. Implement:
-- iterative binary search
-- recursive binary search
-Then benchmark them with random inputs.
+# Linked List Implementation
+Implement the following for a linked list:
+- append
+- prepend
+- delete
+- search
+- print
 
 TODO:
 - Fill in functions

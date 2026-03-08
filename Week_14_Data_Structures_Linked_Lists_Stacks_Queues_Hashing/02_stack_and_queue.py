@@ -1,10 +1,11 @@
 """
-TASK: 01 Bubble Sort
+TASK: 02 Stack and Queue Implementation
 
-# Bubble Sort
-Implement Bubble Sort:
-- Do not use built-in sort()
-- Count swaps
+#  Stack and Queue (Manual)
+Implement both using lists:
+- push/pop
+- enqueue/dequeue
+Simulate stack-based undo system
 
 TODO:
 - Fill in functions

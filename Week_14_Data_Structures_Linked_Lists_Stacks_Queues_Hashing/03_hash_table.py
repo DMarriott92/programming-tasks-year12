@@ -1,11 +1,14 @@
 """
-TASK: 03 Grid Path Counter
+TASK: 03 Hash Table Implementation
 
-# Grid Path Counter
-Given an N×M grid:
-- Count paths using recursion
-- Count paths using iteration
-Movement allowed: RIGHT or DOWN only.
+#  Hash Table (Chaining or probing)
+Implement:
+- Hash function
+- Collision handling
+- insert
+- search
+- delete
+
 
 TODO:
 - Fill in functions
