@@ -1,0 +1,9 @@
+day,product,quantity,price
+Monday,Keyboard,5,25
+Monday,Mouse,8,15
+Tuesday,Monitor,3,120
+Tuesday,Keyboard,4,25
+Wednesday,Mouse,10,15
+Thursday,Laptop,2,900
+Friday,Keyboard,6,25
+Friday,Mouse,7,15
