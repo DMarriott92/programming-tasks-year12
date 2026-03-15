@@ -34,4 +34,9 @@ pytest
 
 # Testing
 
+There is an expectation that you are able to perform simple testing on your code, it is a good position to get into.
+"Commit if test is green" is a common practice in programming.
+In our first lesson, I will show you how to create a pytest setup easily. There is a HTML file that provides a basic plan for what each of your folders should contain in the testing .py file.
+I will want to see the test and run it myself when I check your work.
+You will need to makesure your dependancies are all installed as above for this to work.
 
