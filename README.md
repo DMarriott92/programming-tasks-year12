@@ -27,7 +27,11 @@ Topics covered:
 2. Install git https://git-scm.com/install/
 3. Open VS Code, use the clone repository tool
 4. Install dependancies using the powershell terminal (or bash command)
-   
+
 pip install -r requirements.txt
 5. Run tests as a command
 pytest
+
+# Testing
+
+
