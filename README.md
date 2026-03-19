@@ -1,5 +1,5 @@
 # Year 12 Programming Tasks
-Please refer to the homework calendar for deadlines and what is expected from you. Jack
+Please refer to the homework calendar for deadlines and what is expected from you.
 
 Programming Tasks – AQA A Level Computer Science (Year 12)
 
