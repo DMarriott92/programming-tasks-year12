@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Writing Your Own Tests — Year 12 CS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161f;
+    --surface2: #1a1e2a;
+    --border: #252a38;
+    --accent: #4fffb0;
+    --accent2: #7b8cff;
+    --accent3: #ff6b6b;
+    --accent4: #ffd166;
+    --text: #e2e8f0;
+    --muted: #6b7a99;
+    --code-bg: #090b10;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(79,255,176,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,255,176,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    margin-bottom: 64px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 40px;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: rgba(79,255,176,0.08);
+    border: 1px solid rgba(79,255,176,0.2);
+    padding: 4px 12px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  h1 span {
+    color: var(--accent);
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 520px;
+  }
+
+  /* Progress nav */
+  .progress-nav {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+
+  .nav-step {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface);
+    white-space: nowrap;
+  }
+
+  .nav-step:hover, .nav-step.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(79,255,176,0.06);
+  }
+
+  /* Sections */
+  .section {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Section titles */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--bg);
+    background: var(--accent);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent2);
+    margin: 28px 0 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  p { margin-bottom: 14px; font-size: 15px; }
+
+  strong { font-weight: 600; color: var(--text); }
+
+  /* Code blocks */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+  }
+
+  .code-header {
+    background: var(--surface);
+    padding: 10px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .code-header .dots { display: flex; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #ffbd2e; }
+  .dot-g { background: #28c840; }
+
+  pre {
+    padding: 20px 18px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  /* Syntax colours */
+  .kw  { color: #c792ea; }   /* keyword */
+  .fn  { color: #82aaff; }   /* function */
+  .st  { color: #c3e88d; }   /* string */
+  .cm  { color: #546e7a; font-style: italic; }  /* comment */
+  .nm  { color: var(--accent4); }  /* number */
+  .ac  { color: var(--accent); }   /* accent / class */
+  .op  { color: #89ddff; }   /* operator */
+
+  /* Callout boxes */
+  .callout {
+    border-left: 3px solid;
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+
+  .callout.info    { border-color: var(--accent2); background: rgba(123,140,255,0.07); }
+  .callout.tip     { border-color: var(--accent);  background: rgba(79,255,176,0.06); }
+  .callout.warn    { border-color: var(--accent4); background: rgba(255,209,102,0.07); }
+  .callout.danger  { border-color: var(--accent3); background: rgba(255,107,107,0.07); }
+
+  .callout-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .callout.info    .callout-label { color: var(--accent2); }
+  .callout.tip     .callout-label { color: var(--accent);  }
+  .callout.warn    .callout-label { color: var(--accent4); }
+  .callout.danger  .callout-label { color: var(--accent3); }
+
+  /* Checklist */
+  .checklist { list-style: none; margin: 14px 0; }
+  .checklist li {
+    padding: 8px 0 8px 28px;
+    position: relative;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li::before {
+    content: '○';
+    position: absolute;
+    left: 0;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.2s;
+  }
+  .checklist li.done::before { content: '✓'; color: var(--accent); }
+  .checklist li.done { color: var(--muted); text-decoration: line-through; }
+
+  /* Task cards */
+  .task-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+  }
+
+  .task-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .task-card:hover { border-color: var(--accent2); }
+
+  .task-card .t-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent2);
+    margin-bottom: 6px;
+  }
+
+  .task-card .t-name {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .task-card .t-file {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* Tier pills */
+  .tiers { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+  .tier {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+  .tier-core   { background: rgba(79,255,176,0.1);  color: var(--accent);  border: 1px solid rgba(79,255,176,0.25); }
+  .tier-exp    { background: rgba(123,140,255,0.1); color: var(--accent2); border: 1px solid rgba(123,140,255,0.25); }
+  .tier-str    { background: rgba(255,107,107,0.1); color: var(--accent3); border: 1px solid rgba(255,107,107,0.25); }
+
+  /* Nav buttons */
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 10px 22px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 700;
+  }
+  .btn-primary:hover { background: #6bffbe; }
+  .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* Inline code */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--accent4);
+  }
+
+  /* Test output simulation */
+  .terminal {
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.8;
+    margin: 20px 0;
+  }
+
+  .t-pass { color: #4fffb0; }
+  .t-fail { color: #ff6b6b; }
+  .t-warn { color: #ffd166; }
+  .t-dim  { color: #555; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+
+  th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.05em;
+  }
+
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: top;
+  }
+
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .highlight { background: rgba(79,255,176,0.05); border-left: 2px solid var(--accent); }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 28px 0;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="tag">AQA A-Level Computer Science · Year 12</div>
+    <h1>Writing Tests<br><span>Before</span> You Write Code</h1>
+    <p class="subtitle">A practical guide to pytest and test-driven thinking, using your Week 01 tasks as the example.</p>
+  </header>
+
+  <!-- Nav -->
+  <div class="progress-nav">
+    <button class="nav-step active" onclick="goTo(0)">1. Why Test?</button>
+    <button class="nav-step" onclick="goTo(1)">2. How pytest Works</button>
+    <button class="nav-step" onclick="goTo(2)">3. Read the Test File</button>
+    <button class="nav-step" onclick="goTo(3)">4. Fill in the TODOs</button>
+    <button class="nav-step" onclick="goTo(4)">5. Run Your Tests</button>
+    <button class="nav-step" onclick="goTo(5)">6. Your Checklist</button>
+  </div>
+
+  <!-- ── SECTION 0 ─────────────────────────────────────────── -->
+  <div class="section active" id="s0">
+    <div class="section-header">
+      <div class="step-num">1</div>
+      <h2>Why Write Tests Before Code?</h2>
+    </div>
+
+    <p>Most beginners write code first and then manually check if it works — by running it, typing in some values, and eyeballing the output. That approach has some serious problems.</p>
+
+    <div class="callout danger">
+      <div class="callout-label">⚠ The Problem with Manual Testing</div>
+      You only test the cases you <em>think of</em> in the moment. Edge cases — negative numbers, empty lists, unexpected inputs — get missed. Bugs hide there.
+    </div>
+
+    <p>The professional approach is <strong>Test-Driven Development (TDD)</strong>: write your tests first, then write the code that makes those tests pass. This forces you to think clearly about <em>what</em> your function should do before you worry about <em>how</em>.</p>
+
+    <h3>The Three Benefits for A-Level</h3>
+
+    <table>
+      <tr><th>Benefit</th><th>What it means for you</th></tr>
+      <tr>
+        <td><strong>Clarity</strong></td>
+        <td>Writing a test forces you to define the exact inputs and expected outputs — that's essentially writing a specification before you code.</td>
+      </tr>
+      <tr>
+        <td><strong>Confidence</strong></td>
+        <td>Once your tests pass, you know the function works — not just for the easy case, but for all the cases you defined.</td>
+      </tr>
+      <tr class="highlight">
+        <td><strong>Debugging speed</strong></td>
+        <td>When a test fails, pytest tells you exactly which function broke and what it returned instead of what you expected. No guessing.</td>
+      </tr>
+    </table>
+
+    <div class="callout tip">
+      <div class="callout-label">💡 Good to Know</div>
+      This technique is used in almost every professional software team. Learning it now puts you ahead of most programmers who only discovered it years into their careers.
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" disabled>← Back</button>
+      <button class="btn btn-primary" onclick="goTo(1)">Next: How pytest Works →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 1 ─────────────────────────────────────────── -->
+  <div class="section" id="s1">
+    <div class="section-header">
+      <div class="step-num">2</div>
+      <h2>How pytest Works</h2>
+    </div>
+
+    <p>pytest is a Python testing library. You write functions that check whether your code behaves correctly, and pytest runs them all and reports the results.</p>
+
+    <h3>// The Anatomy of a Test</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>example_test.py</span>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">test_celsius_to_fahrenheit_freezing_point</span>():
+    <span class="cm"># Arrange: set up the input</span>
+    input_temp = <span class="nm">0</span>
+
+    <span class="cm"># Act: call the function</span>
+    result = <span class="fn">celsius_to_fahrenheit</span>(input_temp)
+
+    <span class="cm"># Assert: check the output is what we expect</span>
+    <span class="kw">assert</span> result == pytest.approx(<span class="nm">32.0</span>)</pre>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">📋 The Arrange–Act–Assert Pattern</div>
+      Every test you write should follow this three-step pattern. <strong>Arrange</strong> your inputs, <strong>Act</strong> by calling the function, then <strong>Assert</strong> the output is correct. This keeps tests readable and easy to debug.
+    </div>
+
+    <h3>// Key pytest Tools You'll Use</h3>
+
+    <table>
+      <tr><th>Tool</th><th>What it does</th><th>When to use it</th></tr>
+      <tr>
+        <td><code>assert x == y</code></td>
+        <td>Checks two values are equal</td>
+        <td>Most tests</td>
+      </tr>
+      <tr>
+        <td><code>pytest.approx(x)</code></td>
+        <td>Checks a float is close enough</td>
+        <td>Decimal results (e.g. 98.6°F)</td>
+      </tr>
+      <tr>
+        <td><code>isinstance(x, type)</code></td>
+        <td>Checks the type of a value</td>
+        <td>Confirming a function returns a <code>float</code>, <code>list</code>, etc.</td>
+      </tr>
+      <tr class="highlight">
+        <td><code>pytest.raises(Error)</code></td>
+        <td>Checks that an exception is raised</td>
+        <td>Edge cases like empty lists</td>
+      </tr>
+    </table>
+
+    <h3>// Why pytest.approx() Matters</h3>
+    <p>Floating point arithmetic in computers is not perfectly precise. For example:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>Python interpreter</span>
+      </div>
+      <pre><span class="op">>>></span> <span class="nm">0.1</span> + <span class="nm">0.2</span> == <span class="nm">0.3</span>
+<span class="t-fail">False</span>
+<span class="op">>>></span> <span class="nm">0.1</span> + <span class="nm">0.2</span>
+<span class="nm">0.30000000000000004</span></pre>
+    </div>
+
+    <p>So for any test involving decimal division or temperature formulas, always use <code>pytest.approx()</code> instead of <code>==</code>.</p>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(0)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(2)">Next: Read the Test File →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 2 ─────────────────────────────────────────── -->
+  <div class="section" id="s2">
+    <div class="section-header">
+      <div class="step-num">3</div>
+      <h2>Understanding the Week 01 Test File</h2>
+    </div>
+
+    <p>Open <code>test_week01.py</code> in VS Code. It tests all six of your Week 01 tasks. Here's what's in it:</p>
+
+    <div class="task-grid">
+      <div class="task-card">
+        <div class="t-num">TASK 1</div>
+        <div class="t-name">Average Calculator</div>
+        <div class="t-file">average_calculator.py</div>
+      </div>
+      <div class="task-card">
+        <div class="t-num">TASK 2</div>
+        <div class="t-name">Min / Max Finder</div>
+        <div class="t-file">min_max_finder.py</div>
+      </div>
+      <div class="task-card">
+        <div class="t-num">TASK 3</div>
+        <div class="t-name">Array Reversal</div>
+        <div class="t-file">array_reversal.py</div>
+      </div>
+      <div class="task-card">
+        <div class="t-num">TASK 4</div>
+        <div class="t-name">Linear Search</div>
+        <div class="t-file">linear_search.py</div>
+      </div>
+      <div class="task-card">
+        <div class="t-num">TASK 5</div>
+        <div class="t-name">String Parser</div>
+        <div class="t-file">string_parser.py</div>
+      </div>
+      <div class="task-card">
+        <div class="t-num">TASK 6</div>
+        <div class="t-name">Temperature Converter</div>
+        <div class="t-file">temperature_converter.py</div>
+      </div>
+    </div>
+
+    <h3>// Test Tiers — Three Levels of Difficulty</h3>
+
+    <p>Each task's tests are split into three tiers. You should aim to complete all Core and Expected tests. Stretch tests are optional challenges:</p>
+
+    <div class="tiers">
+      <span class="tier tier-core">CORE — must complete</span>
+      <span class="tier tier-exp">EXPECTED — aim for these</span>
+      <span class="tier tier-str">STRETCH — optional challenge</span>
+    </div>
+
+    <h3>// The Class Structure</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>test_week01.py — structure overview</span>
+      </div>
+      <pre><span class="kw">class</span> <span class="ac">TestAverageCalculator</span>:          <span class="cm"># one class per task</span>
+
+    <span class="kw">def</span> <span class="fn">test_average_of_three_numbers</span>(self):   <span class="cm"># EXAMPLE (done for you)</span>
+        <span class="kw">assert</span> <span class="fn">calculate_average</span>([<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>]) == <span class="nm">20.0</span>
+
+    <span class="kw">def</span> <span class="fn">test_average_of_two_numbers</span>(self):     <span class="cm"># TODO — your job</span>
+        <span class="kw">assert</span> <span class="fn">calculate_average</span>(  <span class="cm"># TODO</span>
+        ) == <span class="cm"># TODO</span></pre>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-label">💡 Important</div>
+      Every class and method name must stay exactly as written — pytest finds your tests using these names. The only thing you change is what goes inside the <code># TODO</code> sections.
+    </div>
+
+    <h3>// The Imports at the Top</h3>
+
+    <p>The test file imports your functions directly. This means your Python files <strong>must be in the same folder</strong> as the test file, and the function names must match exactly:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>test_week01.py — imports</span>
+      </div>
+      <pre><span class="kw">from</span> average_calculator   <span class="kw">import</span> calculate_average
+<span class="kw">from</span> min_max_finder       <span class="kw">import</span> find_min, find_max
+<span class="kw">from</span> array_reversal       <span class="kw">import</span> reverse_array
+<span class="kw">from</span> linear_search        <span class="kw">import</span> linear_search
+<span class="kw">from</span> string_parser        <span class="kw">import</span> count_words, is_palindrome
+<span class="kw">from</span> temperature_converter <span class="kw">import</span> celsius_to_fahrenheit, fahrenheit_to_celsius</pre>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-label">⚠ File Naming</div>
+      The task files in the repo start with numbers (e.g. <code>1_average_calculator.py</code>). You need to <strong>rename them</strong> to remove the number prefix before the imports will work. So <code>1_average_calculator.py</code> becomes <code>average_calculator.py</code>.
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(3)">Next: Fill in the TODOs →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 3 ─────────────────────────────────────────── -->
+  <div class="section" id="s3">
+    <div class="section-header">
+      <div class="step-num">4</div>
+      <h2>Filling in the TODOs</h2>
+    </div>
+
+    <p>Every <code># TODO</code> in the file is a gap you need to fill. Here's how to think through each one, using real examples from your test file.</p>
+
+    <h3>// Example 1: A Basic assert</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>Before — incomplete</span>
+      </div>
+      <pre>    <span class="kw">def</span> <span class="fn">test_average_of_two_numbers</span>(self):
+        <span class="cm"># TODO: call calculate_average() with two numbers that give a whole number average</span>
+        <span class="kw">assert</span> <span class="fn">calculate_average</span>(  <span class="cm"># TODO</span>
+        ) == <span class="cm"># TODO</span></pre>
+    </div>
+
+    <p>Think: what two numbers have a whole-number average? 4 and 8 average to 6. Fill it in:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>After — complete ✓</span>
+      </div>
+      <pre>    <span class="kw">def</span> <span class="fn">test_average_of_two_numbers</span>(self):
+        <span class="kw">assert</span> <span class="fn">calculate_average</span>([<span class="nm">4</span>, <span class="nm">8</span>]) == <span class="nm">6.0</span></pre>
+    </div>
+
+    <hr class="divider">
+
+    <h3>// Example 2: Checking the Return Type</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>Before — incomplete</span>
+      </div>
+      <pre>    <span class="kw">def</span> <span class="fn">test_average_returns_float_type</span>(self):
+        result = <span class="fn">calculate_average</span>(  <span class="cm"># TODO</span>
+        )
+        <span class="kw">assert</span> isinstance(result, <span class="cm"># TODO</span>
+        )</pre>
+    </div>
+
+    <p>You need any valid input, then check the type is <code>float</code>:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>After — complete ✓</span>
+      </div>
+      <pre>    <span class="kw">def</span> <span class="fn">test_average_returns_float_type</span>(self):
+        result = <span class="fn">calculate_average</span>([<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>])
+        <span class="kw">assert</span> isinstance(result, <span class="ac">float</span>)</pre>
+    </div>
+
+    <hr class="divider">
+
+    <h3>// Example 3: Decimals with pytest.approx()</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>Before — incomplete</span>
+      </div>
+      <pre>    <span class="kw">def</span> <span class="fn">test_average_decimal_result</span>(self):
+        <span class="kw">assert</span> <span class="fn">calculate_average</span>(  <span class="cm"># TODO</span>
+        ) == pytest.approx(  <span class="cm"># TODO  ← use pytest.approx() for decimals</span>
+        )</pre>
+    </div>
+
+    <p>The average of 1 and 2 is 1.5 — a decimal. Use <code>pytest.approx()</code>:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>After — complete ✓</span>
+      </div>
+      <pre>    <span class="kw">def</span> <span class="fn">test_average_decimal_result</span>(self):
+        <span class="kw">assert</span> <span class="fn">calculate_average</span>([<span class="nm">1</span>, <span class="nm">2</span>]) == pytest.approx(<span class="nm">1.5</span>)</pre>
+    </div>
+
+    <hr class="divider">
+
+    <h3>// Example 4: Testing That an Error is Raised</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>Before — incomplete</span>
+      </div>
+      <pre>    <span class="kw">def</span> <span class="fn">test_average_empty_list_raises_error</span>(self):
+        <span class="kw">with</span> pytest.raises(  <span class="cm"># TODO: ValueError or another appropriate exception</span>
+        ):
+            <span class="fn">calculate_average</span>([])</pre>
+    </div>
+
+    <p>An empty list has no average. Your function should raise a <code>ValueError</code> for this — so the test checks that it does:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>After — complete ✓</span>
+      </div>
+      <pre>    <span class="kw">def</span> <span class="fn">test_average_empty_list_raises_error</span>(self):
+        <span class="kw">with</span> pytest.raises(<span class="ac">ValueError</span>):
+            <span class="fn">calculate_average</span>([])</pre>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">📋 Note</div>
+      Writing this test <em>before</em> you write <code>calculate_average()</code> is the point — it forces you to decide: should I raise a <code>ValueError</code> or return <code>None</code>? Making that decision consciously leads to better code.
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(2)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(4)">Next: Run Your Tests →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 4 ─────────────────────────────────────────── -->
+  <div class="section" id="s4">
+    <div class="section-header">
+      <div class="step-num">5</div>
+      <h2>Running Your Tests</h2>
+    </div>
+
+    <p>Once you've filled in the TODOs <em>and</em> written your actual Python functions, open the VS Code terminal and run:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>Terminal (PowerShell or bash)</span>
+      </div>
+      <pre>python -m pytest test_week01.py -v</pre>
+    </div>
+
+    <p>The <code>-v</code> flag means "verbose" — it prints the name of every test so you can see exactly what passed and what failed.</p>
+
+    <h3>// Reading the Output</h3>
+
+    <div class="terminal">
+      <span class="t-dim">collected 34 items</span><br><br>
+      <span class="t-pass">PASSED</span> test_week01.py::TestAverageCalculator::test_average_of_three_numbers<br>
+      <span class="t-pass">PASSED</span> test_week01.py::TestAverageCalculator::test_average_of_two_numbers<br>
+      <span class="t-fail">FAILED</span> test_week01.py::TestAverageCalculator::test_average_with_negative_numbers<br>
+      <span class="t-pass">PASSED</span> test_week01.py::TestMinMaxFinder::test_find_max_basic<br>
+      <span class="t-dim">...</span><br><br>
+      <span class="t-fail">FAILED test_week01.py::TestAverageCalculator::test_average_with_negative_numbers</span><br>
+      <span class="t-dim">─────────────────────────────────────────</span><br>
+      <span class="t-warn">AssertionError: assert -2.0 == 2.0</span><br>
+      <span class="t-dim">  Where calculate_average([-6, 2]) returned -2.0</span><br><br>
+      <span class="t-dim">short test summary info</span><br>
+      <span class="t-fail">FAILED</span> - 1 failed, 3 passed in 0.12s
+    </div>
+
+    <p>This output immediately tells you: the test for negative numbers failed because the function returned <code>-2.0</code> when you expected <code>2.0</code>. You'd then go check your logic — and in this case, perhaps your test expectation was wrong, not the function!</p>
+
+    <div class="callout tip">
+      <div class="callout-label">💡 Red–Green–Refactor</div>
+      The professional TDD loop is: write a test → watch it <strong style="color:var(--accent3)">fail (red)</strong> → write the code → watch it <strong style="color:var(--accent)">pass (green)</strong> → tidy up → repeat. Red is not a bad thing — it means your test is working.
+    </div>
+
+    <h3>// Run a Single Test Class</h3>
+
+    <p>If you only want to run the temperature converter tests while you're working on that task:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>Terminal</span>
+      </div>
+      <pre>python -m pytest test_week01.py::TestTemperatureConverter -v</pre>
+    </div>
+
+    <h3>// Run All Tests Across All Weeks</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>Terminal — from the repo root</span>
+      </div>
+      <pre>pytest</pre>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(3)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(5)">Next: Your Checklist →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 5 ─────────────────────────────────────────── -->
+  <div class="section" id="s5">
+    <div class="section-header">
+      <div class="step-num">6</div>
+      <h2>Your Week 01 Checklist</h2>
+    </div>
+
+    <p>Use this checklist to track your progress. Click each item to mark it done.</p>
+
+    <h3>// Step 1 — Setup</h3>
+    <ul class="checklist" id="cl1">
+      <li onclick="toggle(this)">Forked the repo and cloned it to your laptop</li>
+      <li onclick="toggle(this)">Opened the <code>Week_01_Core_Fundamentals</code> folder in VS Code</li>
+      <li onclick="toggle(this)">Renamed task files to remove number prefixes (e.g. <code>1_average_calculator.py</code> → <code>average_calculator.py</code>)</li>
+      <li onclick="toggle(this)">Ran <code>pip install -r requirements.txt</code> in the terminal</li>
+    </ul>
+
+    <h3>// Step 2 — Fill in the Test File</h3>
+    <ul class="checklist" id="cl2">
+      <li onclick="toggle(this)">Read all six example tests (already completed) and understood the pattern</li>
+      <li onclick="toggle(this)">Completed all <span class="tier tier-core">CORE</span> TODOs for Task 1 (Average Calculator)</li>
+      <li onclick="toggle(this)">Completed all <span class="tier tier-core">CORE</span> TODOs for Task 2 (Min / Max Finder)</li>
+      <li onclick="toggle(this)">Completed all <span class="tier tier-core">CORE</span> TODOs for Task 3 (Array Reversal)</li>
+      <li onclick="toggle(this)">Completed all <span class="tier tier-core">CORE</span> TODOs for Task 4 (Linear Search)</li>
+      <li onclick="toggle(this)">Completed all <span class="tier tier-core">CORE</span> TODOs for Task 5 (String Parser)</li>
+      <li onclick="toggle(this)">Completed all <span class="tier tier-core">CORE</span> TODOs for Task 6 (Temperature Converter)</li>
+    </ul>
+
+    <h3>// Step 3 — Write Your Functions</h3>
+    <ul class="checklist" id="cl3">
+      <li onclick="toggle(this)">Implemented <code>calculate_average()</code> — passes all Core tests</li>
+      <li onclick="toggle(this)">Implemented <code>find_min()</code> and <code>find_max()</code> — passes all Core tests</li>
+      <li onclick="toggle(this)">Implemented <code>reverse_array()</code> — passes all Core tests</li>
+      <li onclick="toggle(this)">Implemented <code>linear_search()</code> — passes all Core tests</li>
+      <li onclick="toggle(this)">Implemented <code>count_words()</code> and <code>is_palindrome()</code> — passes all Core tests</li>
+      <li onclick="toggle(this)">Implemented <code>celsius_to_fahrenheit()</code> and <code>fahrenheit_to_celsius()</code> — passes all Core tests</li>
+    </ul>
+
+    <h3>// Step 4 — Push Your Work</h3>
+    <ul class="checklist" id="cl4">
+      <li onclick="toggle(this)">Ran <code>pytest</code> and all Core tests pass</li>
+      <li onclick="toggle(this)">Attempted at least two <span class="tier tier-exp">EXPECTED</span> tests per task</li>
+      <li onclick="toggle(this)">Committed your changes: <code>git add . && git commit -m "Week 01 complete"</code></li>
+      <li onclick="toggle(this)">Pushed to your fork: <code>git push</code></li>
+    </ul>
+
+    <div class="callout tip">
+      <div class="callout-label">💡 Stretch Goal</div>
+      Try the <span class="tier tier-str">STRETCH</span> tests — particularly <code>test_average_empty_list_raises_error</code> and <code>test_is_palindrome_ignores_spaces</code>. These require you to think carefully about edge cases and exception handling, which are both on the AQA spec.
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">📋 Submitting</div>
+      Share your forked repo URL with your teacher. They'll be able to see your commit history, your test file, and your implementations.
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(4)">← Back</button>
+      <button class="btn btn-primary" disabled>All done! 🎉</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let current = 0;
+  const sections = document.querySelectorAll('.section');
+  const navSteps = document.querySelectorAll('.nav-step');
+
+  function goTo(n) {
+    sections[current].classList.remove('active');
+    navSteps[current].classList.remove('active');
+    current = n;
+    sections[current].classList.add('active');
+    navSteps[current].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggle(el) {
+    el.classList.toggle('done');
+  }
+</script>
+</body>
+</html>
