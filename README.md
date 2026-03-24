@@ -29,7 +29,8 @@ Topics covered:
 4. Install dependancies using the powershell terminal (or bash command)
 
 pip install -r requirements.txt
-5. Run tests as a command
+
+5. Run tests as a command to see if it exists
 pytest
 
 # Testing
