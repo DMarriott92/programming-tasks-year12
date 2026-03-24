@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        // Core Python extensions
+        "ms-python.python",
+        "ms-python.black-formatter",
+        "ms-python.flake8",
+        // SQL (Weeks 8, 17, 18)
+        "mtxr.sqltools",
+        "alexcvzz.vscode-sqlite",
+        // Git Visibility
+        "eamodio.gitlens",
+        // CSV Files
+        "mechatroner.rainbow-csv"
+    ]
+}
