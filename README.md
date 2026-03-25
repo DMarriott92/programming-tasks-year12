@@ -1,7 +1,7 @@
 # Year 12 Programming Tasks
 ### AQA A-Level Computer Science (7517)
 
-> Refer to the homework calendar on Google Classroom for weekly deadlines.
+> Refer to the homework calendar on Satchel One for weekly deadlines.
 
 ---
 
