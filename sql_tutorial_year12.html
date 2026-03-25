@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL & SQLite in Python — Year 12 CS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161f;
+    --surface2: #1a1e2a;
+    --border: #252a38;
+    --accent: #4fffb0;
+    --accent2: #7b8cff;
+    --accent3: #ff6b6b;
+    --accent4: #ffd166;
+    --accent5: #ff9f43;
+    --text: #e2e8f0;
+    --muted: #6b7a99;
+    --code-bg: #090b10;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(79,255,176,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,255,176,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    margin-bottom: 64px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 40px;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: rgba(79,255,176,0.08);
+    border: 1px solid rgba(79,255,176,0.2);
+    padding: 4px 12px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 520px;
+  }
+
+  .progress-nav {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+
+  .nav-step {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface);
+    white-space: nowrap;
+  }
+
+  .nav-step:hover, .nav-step.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(79,255,176,0.06);
+  }
+
+  .section { display: none; animation: fadeIn 0.3s ease; }
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--bg);
+    background: var(--accent);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent2);
+    margin: 28px 0 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  p { margin-bottom: 14px; font-size: 15px; }
+  strong { font-weight: 600; color: var(--text); }
+
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 20px 0;
+    overflow: hidden;
+  }
+
+  .code-header {
+    background: var(--surface);
+    padding: 10px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .code-header .dots { display: flex; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #ffbd2e; }
+  .dot-g { background: #28c840; }
+
+  pre {
+    padding: 20px 18px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .kw  { color: #c792ea; }
+  .fn  { color: #82aaff; }
+  .st  { color: #c3e88d; }
+  .cm  { color: #546e7a; font-style: italic; }
+  .nm  { color: var(--accent4); }
+  .ac  { color: var(--accent); }
+  .op  { color: #89ddff; }
+  .sq  { color: var(--accent5); }   /* SQL keywords */
+  .si  { color: #ff9f43; }          /* SQL identifiers */
+
+  .callout {
+    border-left: 3px solid;
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+
+  .callout.info    { border-color: var(--accent2); background: rgba(123,140,255,0.07); }
+  .callout.tip     { border-color: var(--accent);  background: rgba(79,255,176,0.06); }
+  .callout.warn    { border-color: var(--accent4); background: rgba(255,209,102,0.07); }
+  .callout.danger  { border-color: var(--accent3); background: rgba(255,107,107,0.07); }
+
+  .callout-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .callout.info  .callout-label { color: var(--accent2); }
+  .callout.tip   .callout-label { color: var(--accent);  }
+  .callout.warn  .callout-label { color: var(--accent4); }
+  .callout.danger .callout-label { color: var(--accent3); }
+
+  /* DB diagram */
+  .db-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+
+  .tables-row {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .db-table {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    min-width: 180px;
+    flex: 1;
+  }
+
+  .db-table-header {
+    background: rgba(79,255,176,0.1);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  .db-table-row {
+    padding: 7px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .db-table-row:last-child { border-bottom: none; }
+  .db-table-row:hover { background: rgba(255,255,255,0.02); }
+
+  .pk  { color: var(--accent4); font-size: 10px; }
+  .fk  { color: var(--accent5); font-size: 10px; }
+  .col-type { color: var(--muted); font-size: 11px; }
+
+  .relation-arrow {
+    display: flex;
+    align-items: center;
+    color: var(--muted);
+    font-size: 20px;
+    padding-top: 40px;
+    flex-shrink: 0;
+  }
+
+  /* Data rows preview */
+  .data-preview {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 16px 0;
+  }
+
+  .data-preview table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+
+  .data-preview th {
+    background: var(--surface);
+    padding: 8px 14px;
+    text-align: left;
+    color: var(--accent);
+    font-size: 11px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.05em;
+  }
+
+  .data-preview td {
+    padding: 8px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text);
+  }
+
+  .data-preview tr:last-child td { border-bottom: none; }
+  .data-preview tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .pk-val { color: var(--accent4); }
+  .fk-val { color: var(--accent5); }
+
+  /* Flow diagram */
+  .flow {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+    margin: 20px 0;
+    flex-wrap: wrap;
+    gap: 2px;
+  }
+
+  .flow-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 18px;
+    flex: 1;
+    min-width: 130px;
+    text-align: center;
+    position: relative;
+  }
+
+  .flow-step .f-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .flow-step .f-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .flow-step .f-desc {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    color: var(--muted);
+    font-size: 16px;
+    padding: 0 4px;
+    flex-shrink: 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+
+  th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.05em;
+  }
+
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: top;
+  }
+
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .hl { background: rgba(79,255,176,0.05); border-left: 2px solid var(--accent); }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 10px 22px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+  .btn-ghost:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .btn-primary { background: var(--accent); color: var(--bg); font-weight: 700; }
+  .btn-primary:hover { background: #6bffbe; }
+  .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--accent4);
+  }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+  .checklist { list-style: none; margin: 14px 0; }
+  .checklist li {
+    padding: 8px 0 8px 28px;
+    position: relative;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li::before {
+    content: '○';
+    position: absolute;
+    left: 0;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.2s;
+  }
+  .checklist li.done::before { content: '✓'; color: var(--accent); }
+  .checklist li.done { color: var(--muted); text-decoration: line-through; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+
+  @media (max-width: 600px) {
+    .two-col { grid-template-columns: 1fr; }
+    .tables-row { flex-direction: column; }
+    .relation-arrow { transform: rotate(90deg); padding-top: 0; }
+    .flow { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="tag">AQA A-Level Computer Science · Year 12</div>
+    <h1>SQL & Databases<br><span>in Python</span></h1>
+    <p class="subtitle">A practical guide to SQLite, relational design, and writing database-driven programs — from first principles to cross-table queries.</p>
+  </header>
+
+  <div class="progress-nav">
+    <button class="nav-step active" onclick="goTo(0)">1. What is SQL?</button>
+    <button class="nav-step" onclick="goTo(1)">2. Normalisation</button>
+    <button class="nav-step" onclick="goTo(2)">3. Creating Tables</button>
+    <button class="nav-step" onclick="goTo(3)">4. Querying Data</button>
+    <button class="nav-step" onclick="goTo(4)">5. Using Data in Python</button>
+    <button class="nav-step" onclick="goTo(5)">6. Editing Data</button>
+    <button class="nav-step" onclick="goTo(6)">7. Cross-Table Queries</button>
+    <button class="nav-step" onclick="goTo(7)">8. Checklist</button>
+  </div>
+
+  <!-- ── SECTION 0 — What is SQL ── -->
+  <div class="section active" id="s0">
+    <div class="section-header">
+      <div class="step-num">1</div>
+      <h2>What is SQL and Why Do We Use It?</h2>
+    </div>
+
+    <p>SQL stands for <strong>Structured Query Language</strong>. It is the standard language for communicating with relational databases — systems that store data in organised tables, similar to a spreadsheet, but far more powerful.</p>
+
+    <p>Rather than storing data in a Python list or dictionary that disappears when your program ends, a database <strong>persists data permanently</strong> and lets you search, filter, and update it efficiently even when there are millions of records.</p>
+
+    <h3>// Real-World Examples</h3>
+
+    <table>
+      <tr><th>Application</th><th>What SQL is Doing</th></tr>
+      <tr><td><strong>School MIS system</strong></td><td>Storing student records, timetables, attendance and grades — all linked together</td></tr>
+      <tr><td><strong>Online shop</strong></td><td>Managing products, orders, customers and stock levels across related tables</td></tr>
+      <tr><td><strong>Social media</strong></td><td>Every post, like, follow and message stored and retrieved using SQL queries</td></tr>
+      <tr><td><strong>Your Python programs</strong></td><td>Weeks 8, 9, 17, 18 — storing and retrieving data that outlives a single run of the program</td></tr>
+    </table>
+
+    <h3>// SQLite — SQL Without a Server</h3>
+
+    <p>Most databases (MySQL, PostgreSQL) require a separate server process running in the background. <strong>SQLite</strong> is different — it stores the entire database in a single <code>.db</code> file on your computer, and Python has built-in support for it with no installation required.</p>
+
+    <div class="callout tip">
+      <div class="callout-label">💡 Why SQLite for A-Level?</div>
+      SQLite is used in millions of real applications including iOS, Android, and Firefox. It is not a toy — it is simply a version of SQL that doesn't need a server, making it perfect for learning and for programs that run on a single machine.
+    </div>
+
+    <h3>// The Four Core SQL Operations — CRUD</h3>
+
+    <table>
+      <tr><th>Letter</th><th>Operation</th><th>SQL Command</th><th>What it does</th></tr>
+      <tr><td><strong style="color:var(--accent)">C</strong></td><td>Create</td><td><code>INSERT INTO</code></td><td>Add a new row of data</td></tr>
+      <tr><td><strong style="color:var(--accent2)">R</strong></td><td>Read</td><td><code>SELECT</code></td><td>Retrieve data from the database</td></tr>
+      <tr><td><strong style="color:var(--accent4)">U</strong></td><td>Update</td><td><code>UPDATE</code></td><td>Modify existing data</td></tr>
+      <tr><td><strong style="color:var(--accent3)">D</strong></td><td>Delete</td><td><code>DELETE FROM</code></td><td>Remove rows of data</td></tr>
+    </table>
+
+    <div class="callout info">
+      <div class="callout-label">📋 AQA Spec Note</div>
+      CRUD operations and SQL syntax are directly examined in the AQA A-Level theory paper. Understanding what each command does — and being able to write simple queries from scratch — is expected.
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" disabled>← Back</button>
+      <button class="btn btn-primary" onclick="goTo(1)">Next: Normalisation →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 1 — Normalisation ── -->
+  <div class="section" id="s1">
+    <div class="section-header">
+      <div class="step-num">2</div>
+      <h2>What is Normalisation?</h2>
+    </div>
+
+    <p>Normalisation is the process of organising a database to <strong>reduce redundancy</strong> (repeated data) and <strong>improve data integrity</strong> (keeping data accurate and consistent). The AQA spec covers up to Third Normal Form (3NF).</p>
+
+    <p>The best way to understand it is to see the problem it solves. Imagine storing student and subject data in a single flat table:</p>
+
+    <h3>// The Problem — Unnormalised Data (UNF)</h3>
+
+    <div class="data-preview">
+      <table>
+        <tr>
+          <th>StudentID</th><th>StudentName</th><th>Subject1</th><th>Teacher1</th><th>Subject2</th><th>Teacher2</th>
+        </tr>
+        <tr>
+          <td class="pk-val">1</td><td>Alice</td><td>Maths</td><td>Mr Smith</td><td>Physics</td><td>Ms Jones</td>
+        </tr>
+        <tr>
+          <td class="pk-val">2</td><td>Bob</td><td>Maths</td><td>Mr Smith</td><td>Chemistry</td><td>Dr Lee</td>
+        </tr>
+        <tr>
+          <td class="pk-val">3</td><td>Carol</td><td>Physics</td><td>Ms Jones</td><td></td><td></td>
+        </tr>
+      </table>
+    </div>
+
+    <p>Problems: Mr Smith appears multiple times. If he changes his name, you must update every row. What if a student takes 5 subjects? You'd need to add more columns. This is fragile and wasteful.</p>
+
+    <h3>// First Normal Form (1NF)</h3>
+    <p>Each cell holds a single value, and each row is unique. We fix repeating groups by giving each student-subject pair its own row:</p>
+
+    <div class="data-preview">
+      <table>
+        <tr><th>StudentID</th><th>StudentName</th><th>Subject</th><th>Teacher</th></tr>
+        <tr><td class="pk-val">1</td><td>Alice</td><td>Maths</td><td>Mr Smith</td></tr>
+        <tr><td class="pk-val">1</td><td>Alice</td><td>Physics</td><td>Ms Jones</td></tr>
+        <tr><td class="pk-val">2</td><td>Bob</td><td>Maths</td><td>Mr Smith</td></tr>
+        <tr><td class="pk-val">2</td><td>Bob</td><td>Chemistry</td><td>Dr Lee</td></tr>
+      </table>
+    </div>
+
+    <p>Better — but Alice's name is still repeated. And if Mr Smith's name changes, we still need to update multiple rows.</p>
+
+    <h3>// Second & Third Normal Form — The Solution</h3>
+    <p>Split the data into separate tables so each piece of information is stored exactly once, linked by <strong>keys</strong>:</p>
+
+    <div class="db-diagram">
+      <div class="tables-row">
+        <div class="db-table">
+          <div class="db-table-header">students</div>
+          <div class="db-table-row"><span>student_id</span><span class="pk">PK · INTEGER</span></div>
+          <div class="db-table-row"><span>name</span><span class="col-type">TEXT</span></div>
+          <div class="db-table-row"><span>year_group</span><span class="col-type">INTEGER</span></div>
+        </div>
+        <div class="relation-arrow">→</div>
+        <div class="db-table">
+          <div class="db-table-header">enrolments</div>
+          <div class="db-table-row"><span>enrolment_id</span><span class="pk">PK · INTEGER</span></div>
+          <div class="db-table-row"><span>student_id</span><span class="fk">FK → students</span></div>
+          <div class="db-table-row"><span>subject_id</span><span class="fk">FK → subjects</span></div>
+        </div>
+        <div class="relation-arrow">←</div>
+        <div class="db-table">
+          <div class="db-table-header">subjects</div>
+          <div class="db-table-row"><span>subject_id</span><span class="pk">PK · INTEGER</span></div>
+          <div class="db-table-row"><span>subject_name</span><span class="col-type">TEXT</span></div>
+          <div class="db-table-row"><span>teacher_name</span><span class="col-type">TEXT</span></div>
+        </div>
+      </div>
+    </div>
+
+    <p>Now Alice's name is stored once in <code>students</code>. Mr Smith's name is stored once in <code>subjects</code>. The <code>enrolments</code> table just records which student takes which subject using their IDs. Update Mr Smith in one place — it's instantly correct everywhere.</p>
+
+    <h3>// Key Vocabulary</h3>
+    <table>
+      <tr><th>Term</th><th>Meaning</th></tr>
+      <tr><td><strong>Primary Key (PK)</strong></td><td>A unique identifier for each row — no two rows can share it. Usually an auto-incrementing integer.</td></tr>
+      <tr><td><strong>Foreign Key (FK)</strong></td><td>A field in one table that references the primary key of another table — this is how tables link.</td></tr>
+      <tr><td><strong>Referential integrity</strong></td><td>The rule that a foreign key must always point to a row that actually exists.</td></tr>
+      <tr class="hl"><td><strong>Normalisation</strong></td><td>The process of restructuring tables to remove redundancy and dependency issues.</td></tr>
+    </table>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(0)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(2)">Next: Creating Tables →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 2 — Creating Tables ── -->
+  <div class="section" id="s2">
+    <div class="section-header">
+      <div class="step-num">3</div>
+      <h2>Creating Tables in Python with sqlite3</h2>
+    </div>
+
+    <p>Python's built-in <code>sqlite3</code> module lets you create and interact with SQLite databases. No installation needed — it's part of the standard library.</p>
+
+    <h3>// The sqlite3 Workflow</h3>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="f-num">01</div>
+        <div class="f-name">connect()</div>
+        <div class="f-desc">Open or create the .db file</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="f-num">02</div>
+        <div class="f-name">cursor()</div>
+        <div class="f-desc">Create a cursor to run queries</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="f-num">03</div>
+        <div class="f-name">execute()</div>
+        <div class="f-desc">Run your SQL command</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="f-num">04</div>
+        <div class="f-name">commit()</div>
+        <div class="f-desc">Save changes permanently</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="f-num">05</div>
+        <div class="f-name">close()</div>
+        <div class="f-desc">Close the connection</div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-label">⚠ The Most Common Mistake</div>
+      Forgetting to call <code>commit()</code> after INSERT, UPDATE or DELETE means your changes are never actually saved to the file. The program won't error — the data just silently disappears when you close the connection.
+    </div>
+
+    <h3>// Creating Your First Table</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>create_table.py</span>
+      </div>
+      <pre><span class="kw">import</span> sqlite3
+
+<span class="cm"># Step 1: Connect to (or create) the database file</span>
+conn = sqlite3.<span class="fn">connect</span>(<span class="st">'school.db'</span>)
+
+<span class="cm"># Step 2: Create a cursor</span>
+cursor = conn.<span class="fn">cursor</span>()
+
+<span class="cm"># Step 3: Execute a CREATE TABLE statement</span>
+cursor.<span class="fn">execute</span>(<span class="st">'''
+    CREATE TABLE IF NOT EXISTS students (
+        student_id  INTEGER PRIMARY KEY AUTOINCREMENT,
+        name        TEXT    NOT NULL,
+        year_group  INTEGER NOT NULL
+    )
+'''</span>)
+
+<span class="cm"># Step 4: Commit and close</span>
+conn.<span class="fn">commit</span>()
+conn.<span class="fn">close</span>()
+
+<span class="fn">print</span>(<span class="st">"Database and table created successfully."</span>)</pre>
+    </div>
+
+    <h3>// SQL Data Types</h3>
+    <table>
+      <tr><th>Type</th><th>Use it for</th><th>Example</th></tr>
+      <tr><td><code>INTEGER</code></td><td>Whole numbers</td><td>student_id, year_group, age</td></tr>
+      <tr><td><code>TEXT</code></td><td>Strings</td><td>name, email, subject</td></tr>
+      <tr><td><code>REAL</code></td><td>Decimal numbers</td><td>grade, price, score</td></tr>
+      <tr><td><code>BLOB</code></td><td>Binary data</td><td>images, files</td></tr>
+    </table>
+
+    <h3>// Key Constraints</h3>
+    <table>
+      <tr><th>Constraint</th><th>What it does</th></tr>
+      <tr><td><code>PRIMARY KEY</code></td><td>Uniquely identifies each row</td></tr>
+      <tr><td><code>AUTOINCREMENT</code></td><td>SQLite automatically assigns the next available integer</td></tr>
+      <tr><td><code>NOT NULL</code></td><td>This field must always have a value — it cannot be left empty</td></tr>
+      <tr><td><code>UNIQUE</code></td><td>No two rows can have the same value in this column</td></tr>
+      <tr class="hl"><td><code>IF NOT EXISTS</code></td><td>Only create the table if it doesn't already exist — prevents errors on repeated runs</td></tr>
+    </table>
+
+    <div class="callout tip">
+      <div class="callout-label">💡 Best Practice</div>
+      Always use <code>CREATE TABLE IF NOT EXISTS</code>. Without it, running your script a second time will throw an error because the table already exists.
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(3)">Next: Querying Data →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 3 — Querying Data ── -->
+  <div class="section" id="s3">
+    <div class="section-header">
+      <div class="step-num">4</div>
+      <h2>Writing Queries in Python</h2>
+    </div>
+
+    <p>A query is a request sent to the database. The most important query is <code>SELECT</code> — it retrieves rows from a table based on conditions you define.</p>
+
+    <h3>// Inserting Data First</h3>
+    <p>Before you can query anything, you need data in your table. Use <code>INSERT INTO</code>:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>insert_data.py</span>
+      </div>
+      <pre><span class="kw">import</span> sqlite3
+
+conn = sqlite3.<span class="fn">connect</span>(<span class="st">'school.db'</span>)
+cursor = conn.<span class="fn">cursor</span>()
+
+<span class="cm"># Insert a single student — use ? placeholders, NEVER string concatenation</span>
+cursor.<span class="fn">execute</span>(
+    <span class="st">"INSERT INTO students (name, year_group) VALUES (?, ?)"</span>,
+    (<span class="st">"Alice"</span>, <span class="nm">12</span>)
+)
+
+<span class="cm"># Insert multiple students at once</span>
+students = [
+    (<span class="st">"Bob"</span>,   <span class="nm">12</span>),
+    (<span class="st">"Carol"</span>, <span class="nm">13</span>),
+    (<span class="st">"David"</span>, <span class="nm">12</span>),
+]
+cursor.<span class="fn">executemany</span>(
+    <span class="st">"INSERT INTO students (name, year_group) VALUES (?, ?)"</span>,
+    students
+)
+
+conn.<span class="fn">commit</span>()
+conn.<span class="fn">close</span>()</pre>
+    </div>
+
+    <div class="callout danger">
+      <div class="callout-label">🚨 SQL Injection — Never Do This</div>
+      Building queries by joining strings with user input is a critical security vulnerability:<br><br>
+      <code style="color:var(--accent3)">query = "SELECT * FROM students WHERE name = '" + user_input + "'"</code><br><br>
+      A malicious user could type <code>' OR '1'='1</code> as their name and retrieve every row in the database. Always use <code>?</code> placeholders instead.
+    </div>
+
+    <h3>// SELECT Queries</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>select_queries.py</span>
+      </div>
+      <pre><span class="kw">import</span> sqlite3
+
+conn   = sqlite3.<span class="fn">connect</span>(<span class="st">'school.db'</span>)
+cursor = conn.<span class="fn">cursor</span>()
+
+<span class="cm"># Get ALL rows from students</span>
+cursor.<span class="fn">execute</span>(<span class="st">"SELECT * FROM students"</span>)
+
+<span class="cm"># Get only name and year_group columns</span>
+cursor.<span class="fn">execute</span>(<span class="st">"SELECT name, year_group FROM students"</span>)
+
+<span class="cm"># Filter with WHERE</span>
+cursor.<span class="fn">execute</span>(
+    <span class="st">"SELECT * FROM students WHERE year_group = ?"</span>,
+    (<span class="nm">12</span>,)   <span class="cm"># Note the trailing comma — this must be a tuple</span>
+)
+
+<span class="cm"># Sort results</span>
+cursor.<span class="fn">execute</span>(<span class="st">"SELECT * FROM students ORDER BY name ASC"</span>)
+
+<span class="cm"># Limit results</span>
+cursor.<span class="fn">execute</span>(<span class="st">"SELECT * FROM students LIMIT 5"</span>)
+
+conn.<span class="fn">close</span>()</pre>
+    </div>
+
+    <h3>// SQL Query Structure</h3>
+    <table>
+      <tr><th>Clause</th><th>Purpose</th><th>Example</th></tr>
+      <tr><td><code>SELECT</code></td><td>Which columns to return</td><td><code>SELECT name, grade</code></td></tr>
+      <tr><td><code>FROM</code></td><td>Which table to query</td><td><code>FROM students</code></td></tr>
+      <tr><td><code>WHERE</code></td><td>Filter rows by condition</td><td><code>WHERE year_group = 12</code></td></tr>
+      <tr><td><code>ORDER BY</code></td><td>Sort the results</td><td><code>ORDER BY name ASC</code></td></tr>
+      <tr><td><code>LIMIT</code></td><td>Return only N rows</td><td><code>LIMIT 10</code></td></tr>
+    </table>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(2)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(4)">Next: Using Data in Python →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 4 — Using Data in Python ── -->
+  <div class="section" id="s4">
+    <div class="section-header">
+      <div class="step-num">5</div>
+      <h2>Using Query Results in Your Program</h2>
+    </div>
+
+    <p>Running a <code>SELECT</code> query doesn't automatically show you the results — you need to <strong>fetch</strong> them. There are three ways to do this depending on how many rows you expect.</p>
+
+    <h3>// The Three Fetch Methods</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>fetch_results.py</span>
+      </div>
+      <pre><span class="kw">import</span> sqlite3
+
+conn   = sqlite3.<span class="fn">connect</span>(<span class="st">'school.db'</span>)
+cursor = conn.<span class="fn">cursor</span>()
+
+<span class="cm"># ── fetchone() — get a single row ──────────────────────</span>
+cursor.<span class="fn">execute</span>(<span class="st">"SELECT * FROM students WHERE student_id = ?"</span>, (<span class="nm">1</span>,))
+student = cursor.<span class="fn">fetchone</span>()
+<span class="cm"># Returns a tuple: (1, 'Alice', 12)</span>
+<span class="cm"># Returns None if no row is found</span>
+
+<span class="kw">if</span> student:
+    <span class="fn">print</span>(<span class="st">f"Found: </span><span class="ac">{student[1]}</span><span class="st">"</span>)   <span class="cm"># student[1] is the name column</span>
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="st">"Student not found."</span>)
+
+<span class="cm"># ── fetchall() — get all matching rows ─────────────────</span>
+cursor.<span class="fn">execute</span>(<span class="st">"SELECT * FROM students WHERE year_group = ?"</span>, (<span class="nm">12</span>,))
+all_year12 = cursor.<span class="fn">fetchall</span>()
+<span class="cm"># Returns a list of tuples: [(1,'Alice',12), (2,'Bob',12), ...]</span>
+
+<span class="kw">for</span> row <span class="kw">in</span> all_year12:
+    <span class="fn">print</span>(<span class="st">f"ID: </span><span class="ac">{row[0]}</span><span class="st">  Name: </span><span class="ac">{row[1]}</span><span class="st">  Year: </span><span class="ac">{row[2]}</span><span class="st">"</span>)
+
+<span class="cm"># ── fetchmany(n) — get the next n rows ─────────────────</span>
+cursor.<span class="fn">execute</span>(<span class="st">"SELECT * FROM students"</span>)
+first_three = cursor.<span class="fn">fetchmany</span>(<span class="nm">3</span>)
+
+conn.<span class="fn">close</span>()</pre>
+    </div>
+
+    <h3>// Making Results Readable with Row Factories</h3>
+    <p>Accessing results by index like <code>row[1]</code> works but is hard to read. Using <code>row_factory</code> lets you access columns by name instead:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>row_factory.py</span>
+      </div>
+      <pre><span class="kw">import</span> sqlite3
+
+conn = sqlite3.<span class="fn">connect</span>(<span class="st">'school.db'</span>)
+conn.row_factory = sqlite3.Row    <span class="cm"># ← add this line after connect()</span>
+cursor = conn.<span class="fn">cursor</span>()
+
+cursor.<span class="fn">execute</span>(<span class="st">"SELECT * FROM students"</span>)
+students = cursor.<span class="fn">fetchall</span>()
+
+<span class="kw">for</span> student <span class="kw">in</span> students:
+    <span class="cm"># Now access by column name instead of index</span>
+    <span class="fn">print</span>(<span class="st">f"</span><span class="ac">{student['name']}</span><span class="st"> is in Year </span><span class="ac">{student['year_group']}</span><span class="st">"</span>)
+
+conn.<span class="fn">close</span>()</pre>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-label">💡 Which Method to Use?</div>
+      Use <code>fetchone()</code> when looking up a specific record (e.g. login by username). Use <code>fetchall()</code> when you need to display or process a whole list. Use <code>row_factory</code> in any program you plan to show to someone else — it makes the code much easier to read.
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(3)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(5)">Next: Editing Data →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 5 — Editing Data ── -->
+  <div class="section" id="s5">
+    <div class="section-header">
+      <div class="step-num">6</div>
+      <h2>Editing Data from Python</h2>
+    </div>
+
+    <p>The remaining CRUD operations — Update and Delete — let you modify data that already exists in the database. Both follow the same pattern as INSERT: use <code>?</code> placeholders, then <code>commit()</code>.</p>
+
+    <h3>// UPDATE — Modifying Existing Rows</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>update_data.py</span>
+      </div>
+      <pre><span class="kw">import</span> sqlite3
+
+conn   = sqlite3.<span class="fn">connect</span>(<span class="st">'school.db'</span>)
+cursor = conn.<span class="fn">cursor</span>()
+
+<span class="cm"># Update a single student's year group</span>
+cursor.<span class="fn">execute</span>(
+    <span class="st">"UPDATE students SET year_group = ? WHERE student_id = ?"</span>,
+    (<span class="nm">13</span>, <span class="nm">1</span>)   <span class="cm"># Set year_group to 13 where student_id is 1</span>
+)
+
+<span class="cm"># Update multiple columns at once</span>
+cursor.<span class="fn">execute</span>(
+    <span class="st">"UPDATE students SET name = ?, year_group = ? WHERE student_id = ?"</span>,
+    (<span class="st">"Alice Smith"</span>, <span class="nm">13</span>, <span class="nm">1</span>)
+)
+
+<span class="cm"># Check how many rows were actually changed</span>
+<span class="fn">print</span>(<span class="st">f"Rows updated: </span><span class="ac">{cursor.rowcount}</span><span class="st">"</span>)
+
+conn.<span class="fn">commit</span>()
+conn.<span class="fn">close</span>()</pre>
+    </div>
+
+    <div class="callout danger">
+      <div class="callout-label">🚨 Always Use WHERE with UPDATE and DELETE</div>
+      An UPDATE or DELETE without a WHERE clause affects <strong>every single row</strong> in the table. This is one of the most common and most costly mistakes in database programming. Always specify which rows you mean to change.
+    </div>
+
+    <h3>// DELETE — Removing Rows</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>delete_data.py</span>
+      </div>
+      <pre><span class="kw">import</span> sqlite3
+
+conn   = sqlite3.<span class="fn">connect</span>(<span class="st">'school.db'</span>)
+cursor = conn.<span class="fn">cursor</span>()
+
+<span class="cm"># Delete a specific student by ID</span>
+cursor.<span class="fn">execute</span>(
+    <span class="st">"DELETE FROM students WHERE student_id = ?"</span>,
+    (<span class="nm">3</span>,)
+)
+
+<span class="cm"># Confirm the deletion</span>
+<span class="kw">if</span> cursor.rowcount <span class="op">==</span> <span class="nm">1</span>:
+    <span class="fn">print</span>(<span class="st">"Student deleted."</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="st">"No student found with that ID."</span>)
+
+conn.<span class="fn">commit</span>()
+conn.<span class="fn">close</span>()</pre>
+    </div>
+
+    <h3>// A Complete CRUD Function Set</h3>
+    <p>In your Week 09 task you'll build a modular system. Here's what a clean, modular approach looks like:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>crud_module.py — modular pattern</span>
+      </div>
+      <pre><span class="kw">import</span> sqlite3
+
+DB = <span class="st">'school.db'</span>
+
+<span class="kw">def</span> <span class="fn">add_student</span>(name, year_group):
+    conn = sqlite3.<span class="fn">connect</span>(DB)
+    conn.<span class="fn">execute</span>(<span class="st">"INSERT INTO students (name, year_group) VALUES (?,?)"</span>, (name, year_group))
+    conn.<span class="fn">commit</span>()
+    conn.<span class="fn">close</span>()
+
+<span class="kw">def</span> <span class="fn">get_student</span>(student_id):
+    conn = sqlite3.<span class="fn">connect</span>(DB)
+    conn.row_factory = sqlite3.Row
+    row = conn.<span class="fn">execute</span>(<span class="st">"SELECT * FROM students WHERE student_id=?"</span>, (student_id,)).<span class="fn">fetchone</span>()
+    conn.<span class="fn">close</span>()
+    <span class="kw">return</span> row
+
+<span class="kw">def</span> <span class="fn">update_year</span>(student_id, new_year):
+    conn = sqlite3.<span class="fn">connect</span>(DB)
+    conn.<span class="fn">execute</span>(<span class="st">"UPDATE students SET year_group=? WHERE student_id=?"</span>, (new_year, student_id))
+    conn.<span class="fn">commit</span>()
+    conn.<span class="fn">close</span>()
+
+<span class="kw">def</span> <span class="fn">delete_student</span>(student_id):
+    conn = sqlite3.<span class="fn">connect</span>(DB)
+    conn.<span class="fn">execute</span>(<span class="st">"DELETE FROM students WHERE student_id=?"</span>, (student_id,))
+    conn.<span class="fn">commit</span>()
+    conn.<span class="fn">close</span>()</pre>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(4)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(6)">Next: Cross-Table Queries →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 6 — Cross-Table Queries ── -->
+  <div class="section" id="s6">
+    <div class="section-header">
+      <div class="step-num">7</div>
+      <h2>Cross-Table Communication with JOIN</h2>
+    </div>
+
+    <p>The real power of a relational database comes from linking tables together. A <strong>JOIN</strong> combines rows from two or more tables based on a matching key — letting you ask questions that span multiple tables in a single query.</p>
+
+    <p>Using the three-table structure from the Normalisation section:</p>
+
+    <div class="db-diagram">
+      <div class="tables-row">
+        <div class="db-table">
+          <div class="db-table-header">students</div>
+          <div class="db-table-row"><span>student_id</span><span class="pk">PK</span></div>
+          <div class="db-table-row"><span>name</span><span class="col-type">TEXT</span></div>
+          <div class="db-table-row"><span>year_group</span><span class="col-type">INTEGER</span></div>
+        </div>
+        <div class="relation-arrow">→</div>
+        <div class="db-table">
+          <div class="db-table-header">enrolments</div>
+          <div class="db-table-row"><span>enrolment_id</span><span class="pk">PK</span></div>
+          <div class="db-table-row"><span>student_id</span><span class="fk">FK</span></div>
+          <div class="db-table-row"><span>subject_id</span><span class="fk">FK</span></div>
+        </div>
+        <div class="relation-arrow">←</div>
+        <div class="db-table">
+          <div class="db-table-header">subjects</div>
+          <div class="db-table-row"><span>subject_id</span><span class="pk">PK</span></div>
+          <div class="db-table-row"><span>subject_name</span><span class="col-type">TEXT</span></div>
+          <div class="db-table-row"><span>teacher_name</span><span class="col-type">TEXT</span></div>
+        </div>
+      </div>
+    </div>
+
+    <h3>// Creating the Tables in Python</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>create_relational.py</span>
+      </div>
+      <pre><span class="kw">import</span> sqlite3
+
+conn   = sqlite3.<span class="fn">connect</span>(<span class="st">'school.db'</span>)
+cursor = conn.<span class="fn">cursor</span>()
+
+cursor.<span class="fn">execute</span>(<span class="st">'''CREATE TABLE IF NOT EXISTS subjects (
+    subject_id   INTEGER PRIMARY KEY AUTOINCREMENT,
+    subject_name TEXT NOT NULL,
+    teacher_name TEXT NOT NULL
+)'''</span>)
+
+cursor.<span class="fn">execute</span>(<span class="st">'''CREATE TABLE IF NOT EXISTS enrolments (
+    enrolment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id   INTEGER NOT NULL,
+    subject_id   INTEGER NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES students(student_id),
+    FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)
+)'''</span>)
+
+conn.<span class="fn">commit</span>()
+conn.<span class="fn">close</span>()</pre>
+    </div>
+
+    <h3>// INNER JOIN — Combining Tables</h3>
+    <p>An INNER JOIN returns rows where there is a match in <strong>both</strong> tables:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>join_queries.py</span>
+      </div>
+      <pre><span class="kw">import</span> sqlite3
+
+conn = sqlite3.<span class="fn">connect</span>(<span class="st">'school.db'</span>)
+conn.row_factory = sqlite3.Row
+cursor = conn.<span class="fn">cursor</span>()
+
+<span class="cm"># Which subjects is each student enrolled in?</span>
+cursor.<span class="fn">execute</span>(<span class="st">'''
+    SELECT students.name, subjects.subject_name, subjects.teacher_name
+    FROM enrolments
+    INNER JOIN students ON enrolments.student_id = students.student_id
+    INNER JOIN subjects ON enrolments.subject_id = subjects.subject_id
+    ORDER BY students.name
+'''</span>)
+
+<span class="kw">for</span> row <span class="kw">in</span> cursor.<span class="fn">fetchall</span>():
+    <span class="fn">print</span>(<span class="st">f"</span><span class="ac">{row['name']}</span><span class="st"> studies </span><span class="ac">{row['subject_name']}</span><span class="st"> with </span><span class="ac">{row['teacher_name']}</span><span class="st">"</span>)
+
+<span class="cm"># How many students take each subject?</span>
+cursor.<span class="fn">execute</span>(<span class="st">'''
+    SELECT subjects.subject_name, COUNT(enrolments.student_id) AS student_count
+    FROM subjects
+    INNER JOIN enrolments ON subjects.subject_id = enrolments.subject_id
+    GROUP BY subjects.subject_name
+    ORDER BY student_count DESC
+'''</span>)
+
+<span class="kw">for</span> row <span class="kw">in</span> cursor.<span class="fn">fetchall</span>():
+    <span class="fn">print</span>(<span class="st">f"</span><span class="ac">{row['subject_name']}</span><span class="st">: </span><span class="ac">{row['student_count']}</span><span class="st"> students"</span>)
+
+conn.<span class="fn">close</span>()</pre>
+    </div>
+
+    <h3>// Types of JOIN</h3>
+    <table>
+      <tr><th>JOIN Type</th><th>Returns</th><th>Use when</th></tr>
+      <tr class="hl"><td><code>INNER JOIN</code></td><td>Only rows with a match in both tables</td><td>Most common — you only want linked data</td></tr>
+      <tr><td><code>LEFT JOIN</code></td><td>All rows from the left table, plus matches from the right</td><td>You want all students even if not enrolled in anything</td></tr>
+      <tr><td><code>RIGHT JOIN</code></td><td>All rows from the right table, plus matches from the left</td><td>Less common in SQLite</td></tr>
+    </table>
+
+    <h3>// Useful Aggregate Functions</h3>
+    <table>
+      <tr><th>Function</th><th>What it does</th><th>Example</th></tr>
+      <tr><td><code>COUNT()</code></td><td>Count rows</td><td><code>COUNT(student_id)</code></td></tr>
+      <tr><td><code>SUM()</code></td><td>Total of a column</td><td><code>SUM(score)</code></td></tr>
+      <tr><td><code>AVG()</code></td><td>Average of a column</td><td><code>AVG(grade)</code></td></tr>
+      <tr><td><code>MAX()</code></td><td>Highest value</td><td><code>MAX(score)</code></td></tr>
+      <tr><td><code>MIN()</code></td><td>Lowest value</td><td><code>MIN(score)</code></td></tr>
+    </table>
+
+    <div class="callout info">
+      <div class="callout-label">📋 GROUP BY</div>
+      Aggregate functions like <code>COUNT()</code> and <code>AVG()</code> usually need a <code>GROUP BY</code> clause to tell SQL which column to group by. Without it, you get one result for the entire table rather than one per group.
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(5)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(7)">Next: Checklist →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 7 — Checklist ── -->
+  <div class="section" id="s7">
+    <div class="section-header">
+      <div class="step-num">8</div>
+      <h2>SQL Checklist</h2>
+    </div>
+
+    <p>Use this to track your understanding. Click each item when you feel confident with it.</p>
+
+    <h3>// Concepts</h3>
+    <ul class="checklist">
+      <li onclick="toggle(this)">I can explain what a relational database is and why it is used over a flat file</li>
+      <li onclick="toggle(this)">I understand what a primary key and a foreign key are</li>
+      <li onclick="toggle(this)">I can explain what normalisation is and why redundancy is a problem</li>
+      <li onclick="toggle(this)">I can describe the difference between 1NF and a normalised relational structure</li>
+      <li onclick="toggle(this)">I understand what SQL injection is and how parameterised queries prevent it</li>
+    </ul>
+
+    <h3>// Python & sqlite3</h3>
+    <ul class="checklist">
+      <li onclick="toggle(this)">I can connect to a SQLite database using <code>sqlite3.connect()</code></li>
+      <li onclick="toggle(this)">I know the connect → cursor → execute → commit → close workflow</li>
+      <li onclick="toggle(this)">I always use <code>CREATE TABLE IF NOT EXISTS</code></li>
+      <li onclick="toggle(this)">I always use <code>?</code> placeholders — never string concatenation in queries</li>
+      <li onclick="toggle(this)">I know the difference between <code>fetchone()</code>, <code>fetchall()</code>, and <code>fetchmany()</code></li>
+      <li onclick="toggle(this)">I can use <code>row_factory = sqlite3.Row</code> to access columns by name</li>
+      <li onclick="toggle(this)">I remember to call <code>commit()</code> after INSERT, UPDATE and DELETE</li>
+    </ul>
+
+    <h3>// SQL Queries</h3>
+    <ul class="checklist">
+      <li onclick="toggle(this)">I can write a <code>CREATE TABLE</code> statement with appropriate data types and constraints</li>
+      <li onclick="toggle(this)">I can write an <code>INSERT INTO</code> statement with parameterised values</li>
+      <li onclick="toggle(this)">I can write a <code>SELECT</code> query with <code>WHERE</code>, <code>ORDER BY</code>, and <code>LIMIT</code></li>
+      <li onclick="toggle(this)">I can write an <code>UPDATE</code> with a <code>WHERE</code> clause targeting specific rows</li>
+      <li onclick="toggle(this)">I can write a <code>DELETE FROM</code> with a <code>WHERE</code> clause</li>
+      <li onclick="toggle(this)">I can write an <code>INNER JOIN</code> across two tables using a foreign key</li>
+      <li onclick="toggle(this)">I can use <code>COUNT()</code> with <code>GROUP BY</code> to produce a summary report</li>
+    </ul>
+
+    <div class="callout tip">
+      <div class="callout-label">💡 Weeks to Apply This</div>
+      These skills are used directly in <strong>Week 08</strong> (intro), <strong>Week 09</strong> (CRUD), <strong>Week 17</strong> (relational design and JOINs), and <strong>Week 18</strong> (database applications). Return to this guide whenever you get stuck.
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(6)">← Back</button>
+      <button class="btn btn-primary" disabled>All done! 🎉</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let current = 0;
+  const sections = document.querySelectorAll('.section');
+  const navSteps = document.querySelectorAll('.nav-step');
+
+  function goTo(n) {
+    sections[current].classList.remove('active');
+    navSteps[current].classList.remove('active');
+    current = n;
+    sections[current].classList.add('active');
+    navSteps[current].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggle(el) {
+    el.classList.toggle('done');
+  }
+</script>
+</body>
+</html>
