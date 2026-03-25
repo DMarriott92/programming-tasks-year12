@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git Cheat Sheet — Year 12 CS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161f;
+    --surface2: #1a1e2a;
+    --border: #252a38;
+    --accent: #4fffb0;
+    --accent2: #7b8cff;
+    --accent3: #ff6b6b;
+    --accent4: #ffd166;
+    --accent5: #ff9f43;
+    --text: #e2e8f0;
+    --muted: #6b7a99;
+    --code-bg: #090b10;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(79,255,176,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,255,176,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    margin-bottom: 64px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 40px;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: rgba(79,255,176,0.08);
+    border: 1px solid rgba(79,255,176,0.2);
+    padding: 4px 12px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 560px;
+  }
+
+  .progress-nav {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+
+  .nav-step {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface);
+    white-space: nowrap;
+  }
+
+  .nav-step:hover, .nav-step.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(79,255,176,0.06);
+  }
+
+  .section { display: none; animation: fadeIn 0.3s ease; }
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--bg);
+    background: var(--accent);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent2);
+    margin: 28px 0 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  p { margin-bottom: 14px; font-size: 15px; }
+  strong { font-weight: 600; color: var(--text); }
+
+  /* ── Dual-mode command card ── */
+  .cmd-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 20px 0;
+    transition: border-color 0.2s;
+  }
+
+  .cmd-card:hover { border-color: rgba(79,255,176,0.25); }
+
+  .cmd-card-header {
+    padding: 14px 18px 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .cmd-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .cmd-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .cmd-when {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent4);
+    background: rgba(255,209,102,0.08);
+    border: 1px solid rgba(255,209,102,0.2);
+    padding: 3px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    align-self: flex-start;
+  }
+
+  .cmd-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (max-width: 580px) {
+    .cmd-body { grid-template-columns: 1fr; }
+  }
+
+  .cmd-panel {
+    padding: 14px 18px;
+  }
+
+  .cmd-panel:first-child {
+    border-right: 1px solid var(--border);
+  }
+
+  .cmd-panel-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .label-vscode { color: var(--accent2); }
+  .label-bash   { color: var(--accent5); }
+
+  .label-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .icon-vscode { background: rgba(123,140,255,0.15); color: var(--accent2); }
+  .icon-bash   { background: rgba(255,159,67,0.15);  color: var(--accent5); }
+
+  .cmd-steps {
+    list-style: none;
+    font-size: 13px;
+  }
+
+  .cmd-steps li {
+    padding: 5px 0;
+    padding-left: 18px;
+    position: relative;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .cmd-steps li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .cmd-steps code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--accent4);
+  }
+
+  .cmd-steps .path {
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+  }
+
+  /* ── Inline code blocks ── */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 16px 0;
+    overflow: hidden;
+  }
+
+  .code-header {
+    background: var(--surface);
+    padding: 10px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .code-header .dots { display: flex; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #ffbd2e; }
+  .dot-g { background: #28c840; }
+
+  pre {
+    padding: 18px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .kw  { color: #c792ea; }
+  .cm  { color: #546e7a; font-style: italic; }
+  .ac  { color: var(--accent); }
+  .ac2 { color: var(--accent2); }
+  .ac4 { color: var(--accent4); }
+  .ac5 { color: var(--accent5); }
+  .st  { color: #c3e88d; }
+
+  /* ── Callouts ── */
+  .callout {
+    border-left: 3px solid;
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+
+  .callout.info    { border-color: var(--accent2); background: rgba(123,140,255,0.07); }
+  .callout.tip     { border-color: var(--accent);  background: rgba(79,255,176,0.06); }
+  .callout.warn    { border-color: var(--accent4); background: rgba(255,209,102,0.07); }
+  .callout.danger  { border-color: var(--accent3); background: rgba(255,107,107,0.07); }
+
+  .callout-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .callout.info    .callout-label { color: var(--accent2); }
+  .callout.tip     .callout-label { color: var(--accent);  }
+  .callout.warn    .callout-label { color: var(--accent4); }
+  .callout.danger  .callout-label { color: var(--accent3); }
+
+  /* ── Tables ── */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+
+  th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.05em;
+  }
+
+  td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .hl { background: rgba(79,255,176,0.05); border-left: 2px solid var(--accent); }
+
+  /* ── Flow ── */
+  .flow {
+    display: flex;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin: 20px 0;
+  }
+
+  .flow-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    flex: 1;
+    min-width: 110px;
+    text-align: center;
+  }
+
+  .flow-step .f-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    margin-bottom: 5px;
+  }
+
+  .flow-step .f-cmd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .flow-step .f-desc { font-size: 11px; color: var(--muted); }
+
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    color: var(--muted);
+    font-size: 16px;
+    padding: 0 4px;
+    flex-shrink: 0;
+  }
+
+  /* ── Nav buttons ── */
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 10px 22px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+  .btn-ghost:disabled { opacity: 0.3; cursor: not-allowed; }
+  .btn-primary { background: var(--accent); color: var(--bg); font-weight: 700; }
+  .btn-primary:hover { background: #6bffbe; }
+  .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--accent4);
+  }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+    padding: 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+  }
+
+  .legend-item { display: flex; align-items: center; gap: 8px; }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Checklist ── */
+  .checklist { list-style: none; margin: 14px 0; }
+  .checklist li {
+    padding: 8px 0 8px 28px;
+    position: relative;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li::before {
+    content: '○';
+    position: absolute;
+    left: 0;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.2s;
+  }
+  .checklist li.done::before { content: '✓'; color: var(--accent); }
+  .checklist li.done { color: var(--muted); text-decoration: line-through; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="tag">AQA A-Level Computer Science · Year 12</div>
+    <h1>Git<br><span>Cheat Sheet</span></h1>
+    <p class="subtitle">Every Git command you need for this course — shown both in VS Code and in the terminal, side by side.</p>
+  </header>
+
+  <div class="progress-nav">
+    <button class="nav-step active" onclick="goTo(0)">1. How Git Works</button>
+    <button class="nav-step" onclick="goTo(1)">2. First-Time Setup</button>
+    <button class="nav-step" onclick="goTo(2)">3. Daily Workflow</button>
+    <button class="nav-step" onclick="goTo(3)">4. Checking Your Work</button>
+    <button class="nav-step" onclick="goTo(4)">5. Fixing Mistakes</button>
+    <button class="nav-step" onclick="goTo(5)">6. Quick Reference</button>
+  </div>
+
+  <!-- ── SECTION 0 — How Git Works ── -->
+  <div class="section active" id="s0">
+    <div class="section-header">
+      <div class="step-num">1</div>
+      <h2>How Git Works</h2>
+    </div>
+
+    <p>Git is a <strong>version control system</strong> — it tracks every change you make to your code over time. Think of it like a detailed save history: you can always go back to any previous version, see exactly what changed, and why.</p>
+
+    <p>For this course, Git also lets your teacher review your work directly from your fork on GitHub without you emailing files around.</p>
+
+    <h3>// The Three Locations</h3>
+
+    <p>Understanding where your code lives at any moment is the key to understanding Git:</p>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="f-num">YOUR LAPTOP</div>
+        <div class="f-cmd">Working Directory</div>
+        <div class="f-desc">Files you're actively editing in VS Code</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="f-num">STAGED</div>
+        <div class="f-cmd">Staging Area</div>
+        <div class="f-desc">Changes marked ready to save</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="f-num">SAVED LOCALLY</div>
+        <div class="f-cmd">Local Repository</div>
+        <div class="f-desc">Committed snapshots on your machine</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="f-num">GITHUB</div>
+        <div class="f-cmd">Remote Repository</div>
+        <div class="f-desc">Your fork — visible to your teacher</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">📋 The Key Insight</div>
+      <strong>Committing</strong> saves a snapshot to your local machine only. <strong>Pushing</strong> sends those commits to GitHub. Until you push, your teacher cannot see your work — always push before the deadline.
+    </div>
+
+    <h3>// Two Ways to Use Git</h3>
+    <p>Every action in this guide can be done two ways. Use whichever feels more comfortable — they do exactly the same thing:</p>
+
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-dot" style="background: var(--accent2);"></div>
+        <span><strong style="color:var(--accent2)">VS Code</strong> — click through the Source Control panel (the branch icon in the sidebar)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background: var(--accent5);"></div>
+        <span><strong style="color:var(--accent5)">Git Bash / Terminal</strong> — type commands directly (open with <code>Ctrl+`</code> in VS Code)</span>
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" disabled>← Back</button>
+      <button class="btn btn-primary" onclick="goTo(1)">Next: First-Time Setup →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 1 — First-Time Setup ── -->
+  <div class="section" id="s1">
+    <div class="section-header">
+      <div class="step-num">2</div>
+      <h2>First-Time Setup</h2>
+    </div>
+
+    <p>You only need to do these steps <strong>once per laptop</strong>. They tell Git who you are so your commits are labelled correctly.</p>
+
+    <!-- IDENTITY -->
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div>
+          <div class="cmd-name">Set your identity</div>
+          <div class="cmd-desc">Attaches your name and email to every commit you make</div>
+        </div>
+        <div class="cmd-when">once per machine</div>
+      </div>
+      <div class="cmd-body">
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-vscode">
+            <span class="label-icon icon-vscode">VS</span> VS Code
+          </div>
+          <ul class="cmd-steps">
+            <li>Open the terminal with <code>Ctrl+`</code></li>
+            <li>Type the bash commands on the right — there is no VS Code UI for this step</li>
+          </ul>
+        </div>
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-bash">
+            <span class="label-icon icon-bash">&gt;_</span> Git Bash / Terminal
+          </div>
+          <ul class="cmd-steps">
+            <li><code>git config --global user.name "Your Name"</code></li>
+            <li><code>git config --global user.email "you@school.ac.uk"</code></li>
+            <li>Use your real name and school email address</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORK -->
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div>
+          <div class="cmd-name">Fork the repo</div>
+          <div class="cmd-desc">Creates your own personal copy of the teacher's repo under your GitHub account</div>
+        </div>
+        <div class="cmd-when">once per course</div>
+      </div>
+      <div class="cmd-body">
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-vscode">
+            <span class="label-icon icon-vscode">VS</span> VS Code
+          </div>
+          <ul class="cmd-steps">
+            <li>Go to the teacher's repo on GitHub in your browser</li>
+            <li>Click the <code>Fork</code> button at the top right</li>
+            <li>Select your own GitHub account as the destination</li>
+          </ul>
+        </div>
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-bash">
+            <span class="label-icon icon-bash">&gt;_</span> Git Bash / Terminal
+          </div>
+          <ul class="cmd-steps">
+            <li>Forking is done on the GitHub website — there is no terminal command for this</li>
+            <li>After forking, use <code>git clone</code> (below) to get it onto your laptop</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLONE -->
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div>
+          <div class="cmd-name">git clone</div>
+          <div class="cmd-desc">Downloads your fork from GitHub onto your laptop so you can work on it</div>
+        </div>
+        <div class="cmd-when">once per machine</div>
+      </div>
+      <div class="cmd-body">
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-vscode">
+            <span class="label-icon icon-vscode">VS</span> VS Code
+          </div>
+          <ul class="cmd-steps">
+            <li>Press <code>Ctrl+Shift+P</code> to open the command palette</li>
+            <li>Type <code>Git: Clone</code> and press Enter</li>
+            <li>Paste the URL of <strong>your fork</strong> (not the teacher's repo)</li>
+            <li>Choose a folder on your laptop to save it in</li>
+            <li>Click <code>Open</code> when VS Code asks if you want to open the cloned repo</li>
+          </ul>
+        </div>
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-bash">
+            <span class="label-icon icon-bash">&gt;_</span> Git Bash / Terminal
+          </div>
+          <ul class="cmd-steps">
+            <li>Navigate to where you want the folder: <code>cd Documents</code></li>
+            <li><code>git clone https://github.com/YOUR-USERNAME/programming-tasks-year12.git</code></li>
+            <li>Replace <code>YOUR-USERNAME</code> with your GitHub username</li>
+            <li><code>cd programming-tasks-year12</code> to enter the folder</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-label">⚠ Clone your fork, not the teacher's repo</div>
+      The clone URL must come from <strong>your</strong> fork on GitHub. If you clone the teacher's repo directly, you won't be able to push your work back to GitHub.
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(0)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(2)">Next: Daily Workflow →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 2 — Daily Workflow ── -->
+  <div class="section" id="s2">
+    <div class="section-header">
+      <div class="step-num">3</div>
+      <h2>The Daily Workflow</h2>
+    </div>
+
+    <p>Every time you sit down to work on your tasks, the cycle is the same: <strong>pull</strong> any updates from GitHub, write your code, <strong>add</strong> your changes, <strong>commit</strong> them with a message, then <strong>push</strong> back to GitHub.</p>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="f-num">START</div>
+        <div class="f-cmd">git pull</div>
+        <div class="f-desc">Get latest changes</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="f-num">WORK</div>
+        <div class="f-cmd">edit files</div>
+        <div class="f-desc">Write your code</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="f-num">STAGE</div>
+        <div class="f-cmd">git add</div>
+        <div class="f-desc">Mark changes ready</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="f-num">SAVE</div>
+        <div class="f-cmd">git commit</div>
+        <div class="f-desc">Snapshot locally</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="f-num">SHARE</div>
+        <div class="f-cmd">git push</div>
+        <div class="f-desc">Send to GitHub</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- PULL -->
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div>
+          <div class="cmd-name">git pull</div>
+          <div class="cmd-desc">Downloads any new commits from GitHub to your laptop — always do this before starting work</div>
+        </div>
+        <div class="cmd-when">start of every session</div>
+      </div>
+      <div class="cmd-body">
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-vscode">
+            <span class="label-icon icon-vscode">VS</span> VS Code
+          </div>
+          <ul class="cmd-steps">
+            <li>Click the <code>⟳</code> sync icon in the bottom-left status bar</li>
+            <li>Or open Source Control (<code>Ctrl+Shift+G</code>), click the <code>...</code> menu, then <code>Pull</code></li>
+          </ul>
+        </div>
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-bash">
+            <span class="label-icon icon-bash">&gt;_</span> Git Bash / Terminal
+          </div>
+          <ul class="cmd-steps">
+            <li><code>git pull</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD -->
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div>
+          <div class="cmd-name">git add</div>
+          <div class="cmd-desc">Stages your changes — marks which files should be included in the next commit</div>
+        </div>
+        <div class="cmd-when">after editing files</div>
+      </div>
+      <div class="cmd-body">
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-vscode">
+            <span class="label-icon icon-vscode">VS</span> VS Code
+          </div>
+          <ul class="cmd-steps">
+            <li>Open Source Control with <code>Ctrl+Shift+G</code></li>
+            <li>Under <strong>Changes</strong>, click the <code>+</code> next to individual files to stage them</li>
+            <li>Or click <code>+</code> next to <strong>Changes</strong> to stage everything at once</li>
+            <li>Staged files move to the <strong>Staged Changes</strong> section</li>
+          </ul>
+        </div>
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-bash">
+            <span class="label-icon icon-bash">&gt;_</span> Git Bash / Terminal
+          </div>
+          <ul class="cmd-steps">
+            <li>Stage a specific file: <code>git add average_calculator.py</code></li>
+            <li>Stage everything changed: <code>git add .</code></li>
+            <li>The <code>.</code> means "all changed files in this folder and below"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMIT -->
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div>
+          <div class="cmd-name">git commit</div>
+          <div class="cmd-desc">Saves a permanent snapshot of your staged changes with a message describing what you did</div>
+        </div>
+        <div class="cmd-when">when a task is working</div>
+      </div>
+      <div class="cmd-body">
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-vscode">
+            <span class="label-icon icon-vscode">VS</span> VS Code
+          </div>
+          <ul class="cmd-steps">
+            <li>Open Source Control with <code>Ctrl+Shift+G</code></li>
+            <li>Type your commit message in the box at the top (e.g. <code>Week 01 task 1 complete</code>)</li>
+            <li>Press <code>Ctrl+Enter</code> or click the <code>✓ Commit</code> button</li>
+          </ul>
+        </div>
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-bash">
+            <span class="label-icon icon-bash">&gt;_</span> Git Bash / Terminal
+          </div>
+          <ul class="cmd-steps">
+            <li><code>git commit -m "Week 01 task 1 complete"</code></li>
+            <li>The <code>-m</code> flag lets you write the message inline</li>
+            <li>Without <code>-m</code> Git opens a text editor — just use <code>-m</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h3>// Writing Good Commit Messages</h3>
+
+    <table>
+      <tr><th>❌ Bad</th><th>✓ Good</th></tr>
+      <tr><td><code>stuff</code></td><td><code>Add average_calculator function</code></td></tr>
+      <tr><td><code>fixed</code></td><td><code>Fix off-by-one error in linear search</code></td></tr>
+      <tr><td><code>wk1</code></td><td><code>Week 01 all core tests passing</code></td></tr>
+      <tr><td><code>aaaaaa</code></td><td><code>Add input validation to grade calculator</code></td></tr>
+    </table>
+
+    <div class="callout tip">
+      <div class="callout-label">💡 Rule of Thumb</div>
+      A good commit message completes the sentence: <em>"If applied, this commit will..."</em> — so "Add input validation" reads naturally, but "added stuff" does not.
+    </div>
+
+    <!-- PUSH -->
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div>
+          <div class="cmd-name">git push</div>
+          <div class="cmd-desc">Sends your local commits up to GitHub — this is what makes your work visible to your teacher</div>
+        </div>
+        <div class="cmd-when">end of every session</div>
+      </div>
+      <div class="cmd-body">
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-vscode">
+            <span class="label-icon icon-vscode">VS</span> VS Code
+          </div>
+          <ul class="cmd-steps">
+            <li>Click the <code>⟳</code> sync icon in the bottom-left status bar</li>
+            <li>Or open Source Control, click <code>...</code>, then <code>Push</code></li>
+            <li>VS Code may ask you to sign in to GitHub the first time</li>
+          </ul>
+        </div>
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-bash">
+            <span class="label-icon icon-bash">&gt;_</span> Git Bash / Terminal
+          </div>
+          <ul class="cmd-steps">
+            <li><code>git push</code></li>
+            <li>First time on a new machine you may need: <code>git push -u origin main</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout danger">
+      <div class="callout-label">🚨 Committed ≠ Pushed</div>
+      Committing saves your work locally on your laptop only. If your laptop is lost, your work is gone. <strong>Push at the end of every session</strong> — it takes two seconds and means your work is safe on GitHub and visible to your teacher.
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(3)">Next: Checking Your Work →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 3 — Checking Your Work ── -->
+  <div class="section" id="s3">
+    <div class="section-header">
+      <div class="step-num">4</div>
+      <h2>Checking Your Work</h2>
+    </div>
+
+    <p>These commands help you understand what state your repo is in at any moment — what's changed, what's staged, and what's been committed.</p>
+
+    <!-- STATUS -->
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div>
+          <div class="cmd-name">git status</div>
+          <div class="cmd-desc">Shows which files have changed, which are staged, and which are untracked</div>
+        </div>
+        <div class="cmd-when">whenever you're unsure</div>
+      </div>
+      <div class="cmd-body">
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-vscode">
+            <span class="label-icon icon-vscode">VS</span> VS Code
+          </div>
+          <ul class="cmd-steps">
+            <li>Open Source Control with <code>Ctrl+Shift+G</code></li>
+            <li>Changed files appear under <strong>Changes</strong></li>
+            <li>Staged files appear under <strong>Staged Changes</strong></li>
+            <li>The bottom status bar shows the current branch and sync state</li>
+          </ul>
+        </div>
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-bash">
+            <span class="label-icon icon-bash">&gt;_</span> Git Bash / Terminal
+          </div>
+          <ul class="cmd-steps">
+            <li><code>git status</code></li>
+            <li>Red filenames = changed but not staged</li>
+            <li>Green filenames = staged and ready to commit</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOG -->
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div>
+          <div class="cmd-name">git log</div>
+          <div class="cmd-desc">Shows the history of all commits — who made them, when, and what the message was</div>
+        </div>
+        <div class="cmd-when">to review your history</div>
+      </div>
+      <div class="cmd-body">
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-vscode">
+            <span class="label-icon icon-vscode">VS</span> VS Code
+          </div>
+          <ul class="cmd-steps">
+            <li>Install the <strong>GitLens</strong> extension (already in your recommended extensions)</li>
+            <li>Click the GitLens icon in the sidebar to see a visual commit history</li>
+            <li>Or hover over any line of code — GitLens shows when it was last changed and by who</li>
+          </ul>
+        </div>
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-bash">
+            <span class="label-icon icon-bash">&gt;_</span> Git Bash / Terminal
+          </div>
+          <ul class="cmd-steps">
+            <li><code>git log</code> — full history (press <code>q</code> to exit)</li>
+            <li><code>git log --oneline</code> — compact one-line-per-commit view</li>
+            <li><code>git log --oneline -5</code> — show only the last 5 commits</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h3>// What git log --oneline looks like</h3>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
+        <span>terminal output</span>
+      </div>
+      <pre><span class="ac">a3f92c1</span> Week 02 all core tests passing
+<span class="ac">7b1e4d8</span> Fix edge case in password strength checker
+<span class="ac">2c9a017</span> Add shopping list edit function
+<span class="ac">f84b3e2</span> Week 01 complete — all tests green
+<span class="ac">1a2b3c4</span> Initial commit</pre>
+    </div>
+
+    <!-- DIFF -->
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div>
+          <div class="cmd-name">git diff</div>
+          <div class="cmd-desc">Shows exactly what has changed in your files since the last commit — line by line</div>
+        </div>
+        <div class="cmd-when">to see what you changed</div>
+      </div>
+      <div class="cmd-body">
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-vscode">
+            <span class="label-icon icon-vscode">VS</span> VS Code
+          </div>
+          <ul class="cmd-steps">
+            <li>Open Source Control with <code>Ctrl+Shift+G</code></li>
+            <li>Click on any file listed under <strong>Changes</strong></li>
+            <li>VS Code opens a side-by-side diff view — red = removed, green = added</li>
+          </ul>
+        </div>
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-bash">
+            <span class="label-icon icon-bash">&gt;_</span> Git Bash / Terminal
+          </div>
+          <ul class="cmd-steps">
+            <li><code>git diff</code> — see all unstaged changes</li>
+            <li><code>git diff average_calculator.py</code> — diff a specific file</li>
+            <li>Lines starting with <code>-</code> were removed, <code>+</code> were added</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(2)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(4)">Next: Fixing Mistakes →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 4 — Fixing Mistakes ── -->
+  <div class="section" id="s4">
+    <div class="section-header">
+      <div class="step-num">5</div>
+      <h2>Fixing Mistakes</h2>
+    </div>
+
+    <p>Everyone makes mistakes. Git's job is to make them recoverable. Here are the situations you're most likely to encounter and how to fix them.</p>
+
+    <!-- UNSTAGE -->
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div>
+          <div class="cmd-name">Unstage a file</div>
+          <div class="cmd-desc">You staged a file by mistake and want to remove it from the next commit without losing your changes</div>
+        </div>
+        <div class="cmd-when">staged wrong file</div>
+      </div>
+      <div class="cmd-body">
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-vscode">
+            <span class="label-icon icon-vscode">VS</span> VS Code
+          </div>
+          <ul class="cmd-steps">
+            <li>Open Source Control with <code>Ctrl+Shift+G</code></li>
+            <li>Under <strong>Staged Changes</strong>, click the <code>−</code> next to the file</li>
+            <li>It moves back to <strong>Changes</strong> — your edits are still there</li>
+          </ul>
+        </div>
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-bash">
+            <span class="label-icon icon-bash">&gt;_</span> Git Bash / Terminal
+          </div>
+          <ul class="cmd-steps">
+            <li><code>git restore --staged average_calculator.py</code></li>
+            <li>Your file changes are kept — only the staging is undone</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISCARD -->
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div>
+          <div class="cmd-name">Discard changes to a file</div>
+          <div class="cmd-desc">You've made a mess of a file and want to go back to the last committed version</div>
+        </div>
+        <div class="cmd-when">file is broken beyond repair</div>
+      </div>
+      <div class="cmd-body">
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-vscode">
+            <span class="label-icon icon-vscode">VS</span> VS Code
+          </div>
+          <ul class="cmd-steps">
+            <li>Open Source Control with <code>Ctrl+Shift+G</code></li>
+            <li>Right-click the file under <strong>Changes</strong></li>
+            <li>Select <code>Discard Changes</code></li>
+          </ul>
+        </div>
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-bash">
+            <span class="label-icon icon-bash">&gt;_</span> Git Bash / Terminal
+          </div>
+          <ul class="cmd-steps">
+            <li><code>git restore average_calculator.py</code></li>
+            <li>⚠ This permanently discards your unsaved changes to that file</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout danger">
+      <div class="callout-label">🚨 This Cannot Be Undone</div>
+      Discarding changes removes them permanently — they were never committed so Git has nothing to restore from. Only do this if you are sure you want to throw away your edits to that file.
+    </div>
+
+    <!-- AMEND -->
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div>
+          <div class="cmd-name">Fix the last commit message</div>
+          <div class="cmd-desc">You just committed but the message has a typo or is unclear</div>
+        </div>
+        <div class="cmd-when">bad commit message</div>
+      </div>
+      <div class="cmd-body">
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-vscode">
+            <span class="label-icon icon-vscode">VS</span> VS Code
+          </div>
+          <ul class="cmd-steps">
+            <li>Open Source Control, click <code>...</code></li>
+            <li>Select <code>Commit → Undo Last Commit</code></li>
+            <li>Your changes come back as staged — re-commit with the correct message</li>
+          </ul>
+        </div>
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-bash">
+            <span class="label-icon icon-bash">&gt;_</span> Git Bash / Terminal
+          </div>
+          <ul class="cmd-steps">
+            <li><code>git commit --amend -m "Corrected commit message"</code></li>
+            <li>Only use this if you have NOT yet pushed — amending a pushed commit causes problems</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- PULL CONFLICTS -->
+    <div class="cmd-card">
+      <div class="cmd-card-header">
+        <div>
+          <div class="cmd-name">Pull rejected — local changes conflict</div>
+          <div class="cmd-desc">You tried to pull but Git says your local changes conflict with what's on GitHub</div>
+        </div>
+        <div class="cmd-when">pull blocked by local edits</div>
+      </div>
+      <div class="cmd-body">
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-vscode">
+            <span class="label-icon icon-vscode">VS</span> VS Code
+          </div>
+          <ul class="cmd-steps">
+            <li>Commit your local changes first (<code>Ctrl+Shift+G</code> → stage → commit)</li>
+            <li>Then pull again — VS Code will highlight any conflicts in the file</li>
+            <li>Click <code>Accept Current</code> or <code>Accept Incoming</code> for each conflict</li>
+            <li>Stage and commit the resolved file</li>
+          </ul>
+        </div>
+        <div class="cmd-panel">
+          <div class="cmd-panel-label label-bash">
+            <span class="label-icon icon-bash">&gt;_</span> Git Bash / Terminal
+          </div>
+          <ul class="cmd-steps">
+            <li>Commit first: <code>git add . && git commit -m "WIP"</code></li>
+            <li>Then: <code>git pull</code></li>
+            <li>If conflicts appear, open the file — look for <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> markers</li>
+            <li>Edit the file to resolve, then: <code>git add . && git commit -m "Resolve conflict"</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-label">💡 Best Prevention</div>
+      The easiest way to avoid conflicts is to always <strong>pull before you start working</strong> and <strong>push when you finish</strong>. Conflicts mostly happen when you forget to pull and someone else (or you from another machine) has pushed in the meantime.
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(3)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(5)">Next: Quick Reference →</button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 5 — Quick Reference ── -->
+  <div class="section" id="s5">
+    <div class="section-header">
+      <div class="step-num">6</div>
+      <h2>Quick Reference</h2>
+    </div>
+
+    <p>All the commands from this guide in one place. Bookmark this section.</p>
+
+    <h3>// Setup — run once per machine</h3>
+    <table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code>git config --global user.name "Name"</code></td><td>Set your name on commits</td></tr>
+      <tr><td><code>git config --global user.email "email"</code></td><td>Set your email on commits</td></tr>
+      <tr><td><code>git clone &lt;url&gt;</code></td><td>Download a repo to your laptop</td></tr>
+    </table>
+
+    <h3>// Daily workflow</h3>
+    <table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr class="hl"><td><code>git pull</code></td><td>Download latest commits from GitHub — do this first</td></tr>
+      <tr><td><code>git status</code></td><td>See what has changed</td></tr>
+      <tr><td><code>git add .</code></td><td>Stage all changed files</td></tr>
+      <tr><td><code>git add &lt;file&gt;</code></td><td>Stage a specific file</td></tr>
+      <tr><td><code>git commit -m "message"</code></td><td>Save a snapshot locally</td></tr>
+      <tr class="hl"><td><code>git push</code></td><td>Send commits to GitHub — do this at the end</td></tr>
+    </table>
+
+    <h3>// Checking your work</h3>
+    <table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code>git log --oneline</code></td><td>See compact commit history</td></tr>
+      <tr><td><code>git log --oneline -5</code></td><td>See last 5 commits only</td></tr>
+      <tr><td><code>git diff</code></td><td>See all unstaged changes</td></tr>
+      <tr><td><code>git diff &lt;file&gt;</code></td><td>See changes in a specific file</td></tr>
+    </table>
+
+    <h3>// Fixing mistakes</h3>
+    <table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code>git restore --staged &lt;file&gt;</code></td><td>Unstage a file (keep changes)</td></tr>
+      <tr><td><code>git restore &lt;file&gt;</code></td><td>Discard changes to a file ⚠ permanent</td></tr>
+      <tr><td><code>git commit --amend -m "msg"</code></td><td>Fix the last commit message (before pushing only)</td></tr>
+    </table>
+
+    <h3>// Weekly checklist</h3>
+    <ul class="checklist">
+      <li onclick="toggle(this)">Pulled before starting this week's tasks</li>
+      <li onclick="toggle(this)">Renamed task files (removed number prefix) before running pytest</li>
+      <li onclick="toggle(this)">Committed after completing each task with a meaningful message</li>
+      <li onclick="toggle(this)">All core tests passing before committing</li>
+      <li onclick="toggle(this)">Pushed to my fork before the deadline</li>
+      <li onclick="toggle(this)">Checked GitHub in the browser to confirm my changes are visible</li>
+    </ul>
+
+    <div class="callout info">
+      <div class="callout-label">📋 The Golden Rule</div>
+      <strong>Commit when tests are green. Push before deadlines.</strong> If you follow just these two rules, Git will serve you well.
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goTo(4)">← Back</button>
+      <button class="btn btn-primary" disabled>All done! 🎉</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let current = 0;
+  const sections = document.querySelectorAll('.section');
+  const navSteps = document.querySelectorAll('.nav-step');
+
+  function goTo(n) {
+    sections[current].classList.remove('active');
+    navSteps[current].classList.remove('active');
+    current = n;
+    sections[current].classList.add('active');
+    navSteps[current].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggle(el) { el.classList.toggle('done'); }
+</script>
+</body>
+</html>
