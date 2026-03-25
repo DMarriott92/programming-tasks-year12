@@ -42,7 +42,3 @@ python -m pytest test_week01.py -v
 - Subroutines and functions
 - String handling
 ```
-
----
-
----
