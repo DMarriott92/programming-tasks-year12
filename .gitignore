@@ -29,3 +29,9 @@ htmlcov/
 *.db
 *.sqlite
 *.sqlite3
+
+# ======================
+# Generated output files
+# ======================
+*_output.csv
+*_results.csv
