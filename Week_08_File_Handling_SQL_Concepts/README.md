@@ -6,6 +6,7 @@
 This week bridges file handling and databases, introducing SQL for the first time.
 You will work with SQLite — a lightweight database that requires no server setup —
 using Python's built-in `sqlite3` module.
+Please refer to the SQL tutorial html in the root folder
 
 ## Tasks
 
